@@ -75,6 +75,7 @@ class Set:
 if __name__ == "__main__":
     a = Set(2, [5], 3)
     print("Yay, Git in PyCharm!")
+    print("Just a second test")
     # print(a)
     # b = Set(1,2,99)
     # print(b)
