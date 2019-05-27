@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-import math
 
 
 # Aufgabe 3.1
@@ -82,12 +81,6 @@ class Set:
         return temp_set
 
     def merge(self, other):
-        if len(self) == 0 and len(other) == 0:
-            return Set()
-        elif len(self) == 0:
-            return  other
-        elif len(other) == 0:
-            return self
         temp_set1 = self.intersect(other)
         temp_set2 = self.copy()
         for element in other:
@@ -152,7 +145,7 @@ class Set:
 
     def copy(self):
         new_set = Set()
-        temp_dict = self.content
+        temp_dict = self.content.copy()
         new_set.content = temp_dict
         return new_set
 
@@ -163,13 +156,22 @@ class Set:
 #Aufgabe 3.1.2
 def neumann_numbers(n, the_set = Set()):
     if len(the_set) < n :
-        the_set = the_set + Set(the_set)
+        the_set + Set(the_set)
         return (neumann_numbers(n,the_set))
     else:
         return the_set
 
+#this has to return n over k for all k from 1 to n
 def binomialCoefficients(num):
-    pass
+    temp = Set(*(i for i in range(num)))
+    temp = temp.powerset()
+    result = [0 for i in range(num+1)]
+    for i in temp:
+        result[len(i)] += 1
+
+    return result
+
+
 
 
 
@@ -182,11 +184,14 @@ class RandomObject:
 
 
 if __name__ == "__main__":
-    a = Set(1, 2,3)
-    b = Set(Set())
-    print(a.powerset())
-    print(b)
-    print(neumann_numbers(3))
+    #a = Set(1, 2,3)
+    #b = Set(2,3,4)
+    #print(a+b)
+    #print(a)
+    #print((a+b).powerset())
+    #print((int(4/2)+4%2))
+    print(binomialCoefficients(6))
+    #print(neumann_numbers(3))
     # print(list(a.content.values()))
     # print(list(iter(a)))
     # print(a.powerset())
