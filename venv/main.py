@@ -37,8 +37,7 @@ class Set:
             stop = len(self)
         text = '{'
         for i in self:
-            temp_key = self.hashed(i)
-            text += str(self.content.get(temp_key)) + ', '
+            text += str(self.content.get(i)) + ', '
         text = text[0:len(text) - 2]
         text += '}'
         return text
@@ -58,12 +57,10 @@ class Set:
         return Set(temp)
 
     def __contains__(self, item):
-        temp_key = self.hashed(item)
-        return self.content.get(temp_key) is not None
+        return self.content.get(item) is not None
 
     def __getitem__(self, item):
-        temp_key = self.hashed(item)
-        return self.content.get(temp_key)
+        return self.content.get(item)
 
     def subset(self, selection):
         # selection is a function mapping the domain of the set to {True, False}
@@ -88,6 +85,7 @@ if __name__ == "__main__":
     ro = RandomObject()
     a = Set(2, [5], {1, 2, 3}, 'c', "string", ro, [23, 2, [0], []], 3)
     print(a)
+    print(a.content)
     # b = Set(1, 2, 99)
     # print(b)
     # c = a - b
