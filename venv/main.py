@@ -1,33 +1,13 @@
-from collections.abc import Iterable
-import math
-
-
 # Aufgabe 3.1
 # this has not had enough testing yet. especially subset function
-def flatten(list):
-    for item in list:
-        if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
-            yield from flatten(item)
-        else:
-            yield item
-        # return list
 
-
-class IteratorShell:    # use for Set class only!!! this is NOT a generic wrapper!!!
-    def __init__(self, set):
-        self.set = set.copy()
-        self.shadowiterator = iter(set.content)
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        try:
-            self.currentindex = self.shadowiterator.__next__()
-        except StopIteration:
-            raise StopIteration
-        self.currentitem = self.set.content[self.currentindex]
-        return self.currentitem
+# def flatten(list):
+#     for item in list:
+#         if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
+#             yield from flatten(item)
+#         else:
+#             yield item
+#         # return list
 
 
 class Set:
@@ -37,10 +17,9 @@ class Set:
     # args takes everything you throw in as a parameter and stores it in a tuple
     def __init__(self, *args):
         self.content = {}
-        if len(args) == 0:
+        if not args:
             pass
         else:
-            # args = list(flatten(args))
             for i in args:
                 temp_key = self.hashed(i)
                 self.content[temp_key] = i
@@ -49,9 +28,17 @@ class Set:
     def __len__(self):
         return len(self.content)
 
-    def __iter__(self):  # BEWARE: this function returns keys, not values! be careful with for x in set!!!
-        iterator = IteratorShell(self)
-        return iter(iterator)
+    def __iter__(self):
+        self.keylist = list(self.content.keys())
+        self.iterindex = -1
+        return self
+
+    def __next__(self):
+        self.iterindex += 1
+        if len(self.keylist) <= self.iterindex:
+            raise StopIteration
+        else:
+            return self.content[self.keylist[self.iterindex]]
 
     def __contains__(self, item):
         temp_key = self.hashed(item)
@@ -64,8 +51,10 @@ class Set:
     def __str__(self, start=0, stop=None):
         if len(self) == 0:
             return "∅"
-        if stop is None:
-            stop = len(self)
+        if len(self) == 1 & isinstance(self.content.values(), Set):
+            return '{' + str(self.content.values()) + '}'
+        # if stop is None:
+        #     stop = len(self)
         text = '{'
         for i in self:
             text += str(i) + ', '
@@ -85,7 +74,7 @@ class Set:
         if len(self) == 0 and len(other) == 0:
             return Set()
         elif len(self) == 0:
-            return  other
+            return other
         elif len(other) == 0:
             return self
         temp_set1 = self.intersect(other)
@@ -123,7 +112,7 @@ class Set:
         result = Set()
         base_set = list(self.content.values())
 
-        for i in range(1,(2**len(self))):
+        for i in range(1, (2**len(self))):
             subsets_to_include = bin(i)[2:]
 
             for i in range(len(self)-len(subsets_to_include)):
@@ -135,7 +124,7 @@ class Set:
                     temp = temp + Set(base_set[j])
             result = result + Set(temp)
 
-        return result +Set(Set())
+        return result + Set(Set())
 
     # internal set operations
     def additem(self, item):
@@ -152,7 +141,7 @@ class Set:
 
     def copy(self):
         new_set = Set()
-        temp_dict = self.content
+        temp_dict = self.content.copy()
         new_set.content = temp_dict
         return new_set
 
@@ -160,17 +149,18 @@ class Set:
     def hashed(self, obj):      # function that hashes any python object to its memory address(as string)
         return str(id(obj))
 
-#Aufgabe 3.1.2
+
+# Aufgabe 3.1.2
 def neumann_numbers(n, the_set = Set()):
-    if len(the_set) < n :
+    if len(the_set) < n:
         the_set = the_set + Set(the_set)
-        return (neumann_numbers(n,the_set))
+        return neumann_numbers(n, the_set)
     else:
         return the_set
 
+
 def binomialCoefficients(num):
     pass
-
 
 
 class RandomObject:
@@ -182,11 +172,13 @@ class RandomObject:
 
 
 if __name__ == "__main__":
-    a = Set(1, 2,3)
+    a = Set(1, 2, 3)
     b = Set(Set())
     print(a.powerset())
     print(b)
-    print(neumann_numbers(3))
+    nn = neumann_numbers(7)
+    print(nn)
+    print(len(nn))
     # print(list(a.content.values()))
     # print(list(iter(a)))
     # print(a.powerset())
