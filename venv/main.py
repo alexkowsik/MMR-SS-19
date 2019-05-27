@@ -1,16 +1,17 @@
 from collections.abc import Iterable
+import math
 
 
 # Aufgabe 3.1
 # this has not had enough testing yet. especially subset function
-def flatten(list):
-    for item in list:
-        if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
-            yield from flatten(item)
-        else:
-            yield item
-        # return list
 
+# def flatten(list):
+#     for item in list:
+#         if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
+#             yield from flatten(item)
+#         else:
+#             yield item
+#         # return list
 
 class IteratorShell:    # use for Set class only!!! this is NOT a generic wrapper!!!
     def __init__(self, set):
@@ -33,24 +34,39 @@ class Set:
     # using dictionaries to store elements
     # only allowing hashable types(i.e.: no lists)
 
+
+
+
+
+
     # args takes everything you throw in as a parameter and stores it in a tuple
     def __init__(self, *args):
         self.content = {}
-        if len(args) == 0:
+        if not args:
             pass
         else:
-            # args = list(flatten(args))
             for i in args:
                 temp_key = self.hashed(i)
                 self.content[temp_key] = i
+
+    def __mul__(self, other):
+        return Cartesian(self, other)
 
     # standard utility functions:
     def __len__(self):
         return len(self.content)
 
-    def __iter__(self):  # BEWARE: this function returns keys, not values! be careful with for x in set!!!
-        iterator = IteratorShell(self)
-        return iter(iterator)
+    def __iter__(self):
+        self.keylist = list(self.content.keys())
+        self.iterindex = -1
+        return self
+
+    def __next__(self):
+        self.iterindex += 1
+        if len(self.keylist) <= self.iterindex:
+            raise StopIteration
+        else:
+            return self.content[self.keylist[self.iterindex]]
 
     def __contains__(self, item):
         temp_key = self.hashed(item)
@@ -63,8 +79,10 @@ class Set:
     def __str__(self, start=0, stop=None):
         if len(self) == 0:
             return "∅"
-        if stop is None:
-            stop = len(self)
+        if len(self) == 1 & isinstance(self.content.values(), Set):
+            return '{' + str(self.content.values()) + '}'
+        # if stop is None:
+        #     stop = len(self)
         text = '{'
         for i in self:
             text += str(i) + ', '
@@ -81,6 +99,12 @@ class Set:
         return temp_set
 
     def merge(self, other):
+        if len(self) == 0 and len(other) == 0:
+            return Set()
+        elif len(self) == 0:
+            return  other
+        elif len(other) == 0:
+            return self
         temp_set1 = self.intersect(other)
         temp_set2 = self.copy()
         for element in other:
@@ -116,7 +140,7 @@ class Set:
         result = Set()
         base_set = list(self.content.values())
 
-        for i in range(1,(2**len(self))):
+        for i in range(1, (2**len(self))):
             subsets_to_include = bin(i)[2:]
 
             for i in range(len(self)-len(subsets_to_include)):
@@ -128,7 +152,7 @@ class Set:
                     temp = temp + Set(base_set[j])
             result = result + Set(temp)
 
-        return result +Set(Set())
+        return result + Set(Set())
 
     # internal set operations
     def additem(self, item):
@@ -153,15 +177,44 @@ class Set:
     def hashed(self, obj):      # function that hashes any python object to its memory address(as string)
         return str(id(obj))
 
-#Aufgabe 3.1.2
+class Cartesian(Set):
+
+    def __init__(self,a,other):
+        super(Cartesian,self).__init__()
+
+        for i in list(a.content.values()):
+            for j in list(other.content.values()):
+                self.additem((i,j))
+
+    def reflex(self,a,b):
+        pass
+
+    def trans(self):
+        pass
+
+    def sym(self):
+        pass
+
+class Relation(Cartesian):
+    #Relationen sind Teilmengen von Kartesischen produkten. Sie sind alse eine Menge
+    #von tupeln. Für all diese Tupel gilt eine bestimmte Elementarrelation( Also:
+    #alle Tupel in R erfüllen eine Funktion (hier func)).Diese Wertet zu Wahr oder Falsch aus
+    #Zb. (junge,junge) erfüllt die Funktion "maybe gey" und deshalb ist das Tupel element von R
+    #, aber(mädel,mädel) wäre sicher nicht "maybe ghey", deshalb ist es kein teil von R
+    def __init__(self,a,other,func):
+        super(Relation,self).__init__(a,other)
+
+        #do stuff
+        R = self.subset(func)
+
+# Aufgabe 3.1.2
 def neumann_numbers(n, the_set = Set()):
     if len(the_set) < n :
-        the_set + Set(the_set)
+        the_set = the_set + Set(the_set)
         return (neumann_numbers(n,the_set))
     else:
         return the_set
 
-#this has to return n over k for all k from 1 to n
 def binomialCoefficients(num):
     temp = Set(*(i for i in range(num)))
     temp = temp.powerset()
@@ -170,7 +223,6 @@ def binomialCoefficients(num):
         result[len(i)] += 1
 
     return result
-
 
 
 
@@ -184,14 +236,16 @@ class RandomObject:
 
 
 if __name__ == "__main__":
-    #a = Set(1, 2,3)
-    #b = Set(2,3,4)
-    #print(a+b)
-    #print(a)
-    #print((a+b).powerset())
-    #print((int(4/2)+4%2))
-    print(binomialCoefficients(6))
-    #print(neumann_numbers(3))
+    a = Set(1, 2,6,4)
+    b = Set(2,3,"c")
+    c = a*b
+    print(c)
+    print(len(c))
+    #print(a.powerset())
+    #print(b)
+    print(neumann_numbers(8))
+    print(len(neumann_numbers(8)))
+    print(binomialCoefficients(3))
     # print(list(a.content.values()))
     # print(list(iter(a)))
     # print(a.powerset())
