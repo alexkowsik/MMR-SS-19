@@ -2,7 +2,7 @@ from collections.abc import Iterable
 
 
 # Aufgabe 3.1
-# this has had not enough testing. especially subset function
+# this has not had enough testing yet. especially subset function
 def flatten(list):
     for item in list:
         if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
@@ -21,12 +21,11 @@ class Set:
         self.content = {}
         if len(args) == 0:
             pass
-
         else:
-
-            args = list(flatten(args))
+            # args = list(flatten(args))
             for i in args:
-                self.content[i] = i
+                temp_key = self.hashed(i)
+                self.content[temp_key] = i
 
     def __len__(self):
         return len(self.content)
@@ -71,9 +70,20 @@ class Set:
                 temp.append(i)
         return Set(temp)
 
+    def hashed(self, object):
+        return str(id(object))
+
+class RandomObject:
+    def __init__(self):
+        self.value = "i'm useless."
+
+    def __str__(self):
+        return "<useless random object>"
+
 
 if __name__ == "__main__":
-    a = Set(2, [5], 3)
+    ro = RandomObject()
+    a = Set(2, [5], {1, 2, 3}, 'c', "string", ro, [23, 2, [0], []], 3)
     print(a)
     # b = Set(1, 2, 99)
     # print(b)
