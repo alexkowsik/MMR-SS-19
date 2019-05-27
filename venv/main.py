@@ -11,19 +11,21 @@ def flatten(list):
             yield item
         # return list
 
-# WIP
-class IteratorShell:
-    def __init__(self, max):
-        self.max = max
+
+class IteratorShell:    # use for Set class only!!! this is NOT a generic wrapper!!!
+    def __init__(self, set):
+        self.set = set
+        self.shadowiterator = iter(set.content)
 
     def __iter__(self):
-        self.currentitem = 0
         return self
 
     def __next__(self):
-        if(self.currentitem >= self.max):
+        try:
+            self.currentindex = self.shadowiterator.__next__()
+        except StopIteration:
             raise StopIteration
-        self.currentitem += 1
+        self.currentitem = self.set.content[self.currentindex]
         return self.currentitem
 
 
@@ -46,18 +48,17 @@ class Set:
     def __len__(self):
         return len(self.content)
 
-# WIP
     def __iter__(self):         # BEWARE: this function returns keys, not values! be careful with for x in set!!!
-        return iter(self.content)
-# WIP
-    def __next__(self):
-        return None
+        iterator = IteratorShell(self)
+        return iter(iterator)
 
     def __contains__(self, item):
-        return self.content.get(item) is not None
+        temp_key = self.hashed(item)
+        return self.content.get(temp_key) is not None
 
     def __getitem__(self, item):
-        return self.content.get(item)
+        temp_key = self.hashed(item)
+        return self.content.get(temp_key)
 
     def __str__(self, start=0, stop=None):
         if len(self) == 0:
@@ -66,7 +67,7 @@ class Set:
             stop = len(self)
         text = '{'
         for i in self:
-            text += str(self.content.get(i)) + ', '
+            text += str(i) + ', '
         text = text[0:len(text) - 2]
         text += '}'
         return text
@@ -103,7 +104,7 @@ class Set:
         return self.complementWithRespectTo(other)
 
     def subset(self, selection):
-        # selection is a function mapping the domain of the set to {True, False}
+        # selection is a function mapping the domain of the set to {True, False} BEWARE: domain is every possible python object!
         new_set = Set()
         for i in self:
             if selection(i):
@@ -144,13 +145,15 @@ class RandomObject:
 
 if __name__ == "__main__":
     ro = RandomObject()
-    a = Set(2, 2, [5], {1, 2, 3}, 'c', "string", ro, [23, 2, [0], []], 3)
+    a = Set(2, [5], {1, 2, 3}, 'c', "string", ro, [23, 2, [0], []], 3)
+    for each in a:
+        print(each)
     print(a)
     b = Set(1, 2, 99)
     print(b)
     c = a + b
     print(c)
-    # print(Set(a, b, c))
     # print(a.subset(lambda x: x < 4))
-    # print(a.__contains__(5))
-    # print(a.__getitem__(5))
+    a.additem(5)
+    print(a.__contains__(5))
+    print(a.__getitem__(5))
