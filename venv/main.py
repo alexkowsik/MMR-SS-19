@@ -37,7 +37,8 @@ class Set:
             stop = len(self)
         text = '{'
         for i in self:
-            text += str(self.content.get(i)) + ', '
+            temp_key = self.hashed(i)
+            text += str(self.content.get(temp_key)) + ', '
         text = text[0:len(text) - 2]
         text += '}'
         return text
@@ -57,13 +58,15 @@ class Set:
         return Set(temp)
 
     def __contains__(self, item):
-        return self.content.get(item) is not None
+        temp_key = self.hashed(item)
+        return self.content.get(temp_key) is not None
 
     def __getitem__(self, item):
-        return self.content.get(item)
+        temp_key = self.hashed(item)
+        return self.content.get(temp_key)
 
     def subset(self, selection):
-        # selection is a Function
+        # selection is a function mapping the domain of the set to {True, False}
         temp = []
         for i in self:
             if selection(i):
