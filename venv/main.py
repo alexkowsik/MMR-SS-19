@@ -1,15 +1,13 @@
-from collections.abc import Iterable
-
-
 # Aufgabe 3.1
 # this has not had enough testing yet. especially subset function
-def flatten(list):
-    for item in list:
-        if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
-            yield from flatten(item)
-        else:
-            yield item
-        # return list
+
+# def flatten(list):
+#     for item in list:
+#         if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
+#             yield from flatten(item)
+#         else:
+#             yield item
+#         # return list
 
 
 class IteratorShell:    # use for Set class only!!! this is NOT a generic wrapper!!!
@@ -31,9 +29,7 @@ class IteratorShell:    # use for Set class only!!! this is NOT a generic wrappe
 
 class Set:
     # using dictionaries to store elements
-    # only allowing hashable types(i.e.: no lists)
-
-    # args takes everything you throw in as a parameter and stores it in a tuple
+    # args takes any python object as parameter and stores it in the dictionary
     def __init__(self, *args):
         self.content = {}
         if len(args) == 0:
@@ -48,7 +44,7 @@ class Set:
     def __len__(self):
         return len(self.content)
 
-    def __iter__(self):         # BEWARE: this function returns keys, not values! be careful with for x in set!!!
+    def __iter__(self):         # BEWARE: this function returns values, not keys! be careful with for x in set!!!
         iterator = IteratorShell(self)
         return iter(iterator)
 
@@ -135,12 +131,15 @@ class Set:
         return str(id(obj))
 
 
-class RandomObject:
+class RandomObject:         # dummy class to show that all python objects are accepted in Set(such pc, much wow)
     def __init__(self):
         self.value = "i'm useless."
 
     def __str__(self):
-        return "<useless random object>"
+        return "<random object>"
+
+    def do_something(self):
+        print("<random object> sais: '" + self.value + "'")
 
 
 if __name__ == "__main__":
