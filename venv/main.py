@@ -11,6 +11,21 @@ def flatten(list):
             yield item
         # return list
 
+# WIP
+class IteratorShell:
+    def __init__(self, max):
+        self.max = max
+
+    def __iter__(self):
+        self.currentitem = 0
+        return self
+
+    def __next__(self):
+        if(self.currentitem >= self.max):
+            raise StopIteration
+        self.currentitem += 1
+        return self.currentitem
+
 
 class Set:
     # using dictionaries to store elements
@@ -27,8 +42,22 @@ class Set:
                 temp_key = self.hashed(i)
                 self.content[temp_key] = i
 
+    # standard utility functions:
     def __len__(self):
         return len(self.content)
+
+# WIP
+    def __iter__(self):         # BEWARE: this function returns keys, not values! be careful with for x in set!!!
+        return iter(self.content)
+# WIP
+    def __next__(self):
+        return None
+
+    def __contains__(self, item):
+        return self.content.get(item) is not None
+
+    def __getitem__(self, item):
+        return self.content.get(item)
 
     def __str__(self, start=0, stop=None):
         if len(self) == 0:
@@ -42,36 +71,68 @@ class Set:
         text += '}'
         return text
 
-    def __iter__(self):
-        return iter(self.content)
+    # set operations
+    def intersect(self, other):
+        temp_set = Set()
+        for element in self:
+            if other.__contains__(element):
+                temp_set.additem(element)
+        return temp_set
+
+    def merge(self, other):
+        temp_set1 = self.intersect(other)
+        temp_set2 = self.copy()
+        for element in other:
+            if element in temp_set1:
+                pass
+            else:
+                temp_set2.additem(element)
+        return temp_set2
+
+    def complementWithRespectTo(self, other):        # computes self / other
+        new_set = self.copy()
+        for i in other:
+            if new_set.__contains__(i):
+                new_set.removeitem(i)
+        return new_set
 
     def __add__(self, other):
-        return Set([self.content, other.content])
+        return self.merge(other)
 
     def __sub__(self, other):
-        # computes self / other
-        temp = self.content.copy()
-        for i in other:
-            if temp.get(i) is not None:
-                temp.pop(i)
-        return Set(temp)
-
-    def __contains__(self, item):
-        return self.content.get(item) is not None
-
-    def __getitem__(self, item):
-        return self.content.get(item)
+        return self.complementWithRespectTo(other)
 
     def subset(self, selection):
         # selection is a function mapping the domain of the set to {True, False}
-        temp = []
+        new_set = Set()
         for i in self:
             if selection(i):
-                temp.append(i)
-        return Set(temp)
+                new_set.additem(i)
+        return new_set
 
-    def hashed(self, object):
-        return str(id(object))
+    # internal set operations
+    def additem(self, item):
+        temp_key = self.hashed(item)
+        self.content[temp_key] = item
+
+    def removeitem(self, item):
+        if not self.__contains__(item):
+            pass
+        else:
+            temp_dict = self.content
+            del temp_dict[self.hashed(item)]
+            self.content = temp_dict
+
+    def copy(self):
+        new_set = Set()
+        temp_dict = self.content
+        new_set.content = temp_dict
+        return new_set
+
+    # helpers
+    def hashed(self, obj):      # function that hashes any python object to its memory address(as string)
+        return str(id(obj))
+
 
 class RandomObject:
     def __init__(self):
@@ -83,13 +144,12 @@ class RandomObject:
 
 if __name__ == "__main__":
     ro = RandomObject()
-    a = Set(2, [5], {1, 2, 3}, 'c', "string", ro, [23, 2, [0], []], 3)
+    a = Set(2, 2, [5], {1, 2, 3}, 'c', "string", ro, [23, 2, [0], []], 3)
     print(a)
-    print(a.content)
-    # b = Set(1, 2, 99)
-    # print(b)
-    # c = a - b
-    # print(c)
+    b = Set(1, 2, 99)
+    print(b)
+    c = a + b
+    print(c)
     # print(Set(a, b, c))
     # print(a.subset(lambda x: x < 4))
     # print(a.__contains__(5))
