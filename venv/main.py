@@ -77,6 +77,12 @@ class Set:
         return temp_set
 
     def merge(self, other):
+        if len(self) == 0 and len(other) == 0:
+            return Set()
+        elif len(self) == 0:
+            return  other
+        elif len(other) == 0:
+            return self
         temp_set1 = self.intersect(other)
         temp_set2 = self.copy()
         for element in other:
@@ -107,6 +113,38 @@ class Set:
                 new_set.additem(i)
         return new_set
 
+    #Aufgabe3.1.2
+    def powerset(self):
+        result = Set()
+        #time.sleep(2)
+        #print("result",result)
+        base_set = list(self.content.values())
+        #time.sleep(2)
+        print("base_set", base_set)
+        print(math.log2(len(self)), " " , len(self))
+        exponent = math.ceil(math.log2(len(self)))+1
+        #time.sleep(2)
+        print("exp", exponent)
+
+        for i in range(1,(2**len(self))):
+            subsets_to_include = bin(i)[2:]
+            #time.sleep(2)
+            for i in range(len(self)-len(subsets_to_include)):
+                subsets_to_include = "0" + subsets_to_include
+            print("subsets", subsets_to_include)
+            temp = Set()
+            for j in range(len(subsets_to_include)):
+                if subsets_to_include[j] == "1":
+                    temp = temp + Set(base_set[j])
+                    #time.sleep(2)
+                    #print("temp", list(iter(temp)))
+            result = result + Set(temp)
+            #time.sleep(2)
+
+        #print("result", list(iter(result)))
+        #print(result)
+        return result
+
     # internal set operations
     def additem(self, item):
         temp_key = self.hashed(item)
@@ -129,6 +167,15 @@ class Set:
     # helpers
     def hashed(self, obj):      # function that hashes any python object to its memory address(as string)
         return str(id(obj))
+
+#Aufgabe 3.1.2
+def neumann_numbers(n, the_set = Set()):
+    if len(the_set) < n :
+        the_set = the_set + Set(the_set)
+        return (neumann_numbers(n,the_set))
+    else:
+        return the_set
+
 
 
 class RandomObject:         # dummy class to show that all python objects are accepted in Set(such pc, much wow)
