@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 import math
-import time
+
 
 # Aufgabe 3.1
 # this has not had enough testing yet. especially subset function
@@ -15,7 +15,7 @@ def flatten(list):
 
 class IteratorShell:    # use for Set class only!!! this is NOT a generic wrapper!!!
     def __init__(self, set):
-        self.set = set
+        self.set = set.copy()
         self.shadowiterator = iter(set.content)
 
     def __iter__(self):
@@ -121,34 +121,21 @@ class Set:
     #Aufgabe3.1.2
     def powerset(self):
         result = Set()
-        #time.sleep(2)
-        #print("result",result)
         base_set = list(self.content.values())
-        #time.sleep(2)
-        print("base_set", base_set)
-        print(math.log2(len(self)), " " , len(self))
-        exponent = math.ceil(math.log2(len(self)))+1
-        #time.sleep(2)
-        print("exp", exponent)
 
         for i in range(1,(2**len(self))):
             subsets_to_include = bin(i)[2:]
-            #time.sleep(2)
+
             for i in range(len(self)-len(subsets_to_include)):
                 subsets_to_include = "0" + subsets_to_include
-            print("subsets", subsets_to_include)
+
             temp = Set()
             for j in range(len(subsets_to_include)):
                 if subsets_to_include[j] == "1":
                     temp = temp + Set(base_set[j])
-                    #time.sleep(2)
-                    #print("temp", list(iter(temp)))
             result = result + Set(temp)
-            #time.sleep(2)
 
-        #print("result", list(iter(result)))
-        #print(result)
-        return result
+        return result +Set(Set())
 
     # internal set operations
     def additem(self, item):
@@ -181,6 +168,9 @@ def neumann_numbers(n, the_set = Set()):
     else:
         return the_set
 
+def binomialCoefficients(num):
+    pass
+
 
 
 class RandomObject:
@@ -192,8 +182,11 @@ class RandomObject:
 
 
 if __name__ == "__main__":
-    a = Set(1, 2)
+    a = Set(1, 2,3)
+    b = Set(Set())
+    print(a.powerset())
+    print(b)
     print(neumann_numbers(3))
     # print(list(a.content.values()))
     # print(list(iter(a)))
-    #print(a.powerset())
+    # print(a.powerset())
