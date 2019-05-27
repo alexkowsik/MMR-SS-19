@@ -1,5 +1,6 @@
 from collections.abc import Iterable
-
+import math
+import time
 
 # Aufgabe 3.1
 # this has not had enough testing yet. especially subset function
@@ -48,7 +49,7 @@ class Set:
     def __len__(self):
         return len(self.content)
 
-    def __iter__(self):         # BEWARE: this function returns keys, not values! be careful with for x in set!!!
+    def __iter__(self):  # BEWARE: this function returns keys, not values! be careful with for x in set!!!
         iterator = IteratorShell(self)
         return iter(iterator)
 
@@ -81,6 +82,12 @@ class Set:
         return temp_set
 
     def merge(self, other):
+        if len(self) == 0 and len(other) == 0:
+            return Set()
+        elif len(self) == 0:
+            return  other
+        elif len(other) == 0:
+            return self
         temp_set1 = self.intersect(other)
         temp_set2 = self.copy()
         for element in other:
@@ -111,6 +118,38 @@ class Set:
                 new_set.additem(i)
         return new_set
 
+    #Aufgabe3.1.2
+    def powerset(self):
+        result = Set()
+        #time.sleep(2)
+        #print("result",result)
+        base_set = list(self.content.values())
+        #time.sleep(2)
+        print("base_set", base_set)
+        print(math.log2(len(self)), " " , len(self))
+        exponent = math.ceil(math.log2(len(self)))+1
+        #time.sleep(2)
+        print("exp", exponent)
+
+        for i in range(1,(2**len(self))):
+            subsets_to_include = bin(i)[2:]
+            #time.sleep(2)
+            for i in range(len(self)-len(subsets_to_include)):
+                subsets_to_include = "0" + subsets_to_include
+            print("subsets", subsets_to_include)
+            temp = Set()
+            for j in range(len(subsets_to_include)):
+                if subsets_to_include[j] == "1":
+                    temp = temp + Set(base_set[j])
+                    #time.sleep(2)
+                    #print("temp", list(iter(temp)))
+            result = result + Set(temp)
+            #time.sleep(2)
+
+        #print("result", list(iter(result)))
+        #print(result)
+        return result
+
     # internal set operations
     def additem(self, item):
         temp_key = self.hashed(item)
@@ -134,6 +173,15 @@ class Set:
     def hashed(self, obj):      # function that hashes any python object to its memory address(as string)
         return str(id(obj))
 
+#Aufgabe 3.1.2
+def neumann_numbers(n, the_set = Set()):
+    if len(the_set) < n :
+        the_set = the_set + Set(the_set)
+        return (neumann_numbers(n,the_set))
+    else:
+        return the_set
+
+
 
 class RandomObject:
     def __init__(self):
@@ -144,16 +192,8 @@ class RandomObject:
 
 
 if __name__ == "__main__":
-    ro = RandomObject()
-    a = Set(2, [5], {1, 2, 3}, 'c', "string", ro, [23, 2, [0], []], 3)
-    for each in a:
-        print(each)
-    print(a)
-    b = Set(1, 2, 99)
-    print(b)
-    c = a + b
-    print(c)
-    # print(a.subset(lambda x: x < 4))
-    a.additem(5)
-    print(a.__contains__(5))
-    print(a.__getitem__(5))
+    a = Set(1, 2)
+    print(neumann_numbers(3))
+    # print(list(a.content.values()))
+    # print(list(iter(a)))
+    #print(a.powerset())
