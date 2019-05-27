@@ -74,12 +74,12 @@ class Set:
 
 if __name__ == "__main__":
     a = Set(2, [5], 3)
-    # print(a)
-    # b = Set(1,2,99)
+    print(a)
+    # b = Set(1, 2, 99)
     # print(b)
-    # c = a - b;
+    # c = a - b
     # print(c)
-    # print(Set(a,b,c))
+    # print(Set(a, b, c))
     # print(a.subset(lambda x: x < 4))
     # print(a.__contains__(5))
     # print(a.__getitem__(5))
