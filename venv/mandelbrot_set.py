@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets as qw
 from PyQt5 import QtGui as qg
+from PyQt5 import QtCore as qc
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -16,6 +17,7 @@ class MandelbrotMenge:
         self.display.mousePressEvent = self.MousePressEvent
 
         self.colormap = plt.cm.jet
+        self.colormap = plt.cm.RdYlBu
 
         self.interval1 = [-2, 1]
         self.interval2 = [1, -1]
@@ -66,11 +68,11 @@ class MandelbrotMenge:
         y = QMouseEvent.y()
         print(x, y)
 
-        if QMouseEvent.button() == Qt.LeftButton:
+        if QMouseEvent.button() == qc.Qt.LeftButton:
             newW = abs(self.interval1[0] - self.interval1[1]) / 4
             newH = abs(self.interval2[0] - self.interval2[1]) / 4
 
-        elif QMouseEvent.button() == Qt.RightButton:
+        elif QMouseEvent.button() == qc.Qt.RightButton:
             newW = abs(self.interval1[0] - self.interval1[1])
             newH = abs(self.interval2[0] - self.interval2[1])
 

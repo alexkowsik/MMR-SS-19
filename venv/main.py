@@ -191,11 +191,11 @@ class Cartesian(Set):
 
 
 class Relation(Cartesian):
-    # Relationen sind Teilmengen von Kartesischen produkten. Sie sind alse eine Menge
-    # von tupeln. Für all diese Tupel gilt eine bestimmte Elementarrelation( Also:
-    # alle Tupel in R erfüllen eine Funktion (hier func)).Diese Wertet zu Wahr oder Falsch aus
-    # Zb. (junge,junge) erfüllt die Funktion "maybe gey" und deshalb ist das Tupel element von R,
-    # aber(mädel,mädel) wäre sicher nicht "maybe ghey", deshalb ist es kein teil von R
+    # Relationen sind Teilmengen von kartesischen Produkten. Sie sind also eine Menge
+    # von Tupeln. Für all diese Tupel gilt eine bestimmte Elementarrelation( Also:
+    # alle Tupel in R erfüllen eine Funktion (hier func)).Diese wertet zu Wahr oder Falsch aus
+    # z.B. (junge,junge) erfüllt die Funktion "maybe ghey" und deshalb ist das Tupel Element von R,
+    # aber(mädel,mädel) wäre sicher nicht "maybe ghey", deshalb ist es kein Teil von R.
     def __init__(self, a, other, func):
         super(Relation, self).__init__(a, other)
 
