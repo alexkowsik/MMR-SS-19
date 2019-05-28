@@ -64,9 +64,15 @@ class MandelbrotMenge:
     def MousePressEvent(self, QMouseEvent):
         x = QMouseEvent.x()
         y = QMouseEvent.y()
+        print(x, y)
 
-        newW = abs(self.interval1[0] - self.interval1[1]) / 4
-        newH = abs(self.interval2[0] - self.interval2[1]) / 4
+        if QMouseEvent.button() == Qt.LeftButton:
+            newW = abs(self.interval1[0] - self.interval1[1]) / 4
+            newH = abs(self.interval2[0] - self.interval2[1]) / 4
+
+        elif QMouseEvent.button() == Qt.RightButton:
+            newW = abs(self.interval1[0] - self.interval1[1])
+            newH = abs(self.interval2[0] - self.interval2[1])
 
         self.interval1 = [self.X[0][x] - newW, self.X[0][x] + newW]
         self.interval2 = [self.Y[y][0] + newH, self.Y[y][0] - newH]
