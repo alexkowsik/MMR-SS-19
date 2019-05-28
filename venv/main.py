@@ -1,7 +1,3 @@
-from collections.abc import Iterable
-import math
-
-
 # Aufgabe 3.1
 # this has not had enough testing yet. especially subset function
 
@@ -33,11 +29,6 @@ class IteratorShell:    # use for Set class only!!! this is NOT a generic wrappe
 class Set:
     # using dictionaries to store elements
     # only allowing hashable types(i.e.: no lists)
-
-
-
-
-
 
     # args takes everything you throw in as a parameter and stores it in a tuple
     def __init__(self, *args):
@@ -102,7 +93,7 @@ class Set:
         if len(self) == 0 and len(other) == 0:
             return Set()
         elif len(self) == 0:
-            return  other
+            return other
         elif len(other) == 0:
             return self
         temp_set1 = self.intersect(other)
@@ -135,7 +126,7 @@ class Set:
                 new_set.additem(i)
         return new_set
 
-    #Aufgabe3.1.2
+    # Aufgabe3.1.2
     def powerset(self):
         result = Set()
         base_set = list(self.content.values())
@@ -177,16 +168,17 @@ class Set:
     def hashed(self, obj):      # function that hashes any python object to its memory address(as string)
         return str(id(obj))
 
+
 class Cartesian(Set):
 
-    def __init__(self,a,other):
-        super(Cartesian,self).__init__()
+    def __init__(self, a, other):
+        super(Cartesian, self).__init__()
 
         for i in list(a.content.values()):
             for j in list(other.content.values()):
-                self.additem((i,j))
+                self.additem((i, j))
 
-    def reflex(self,a,b):
+    def reflex(self, a, b):
         pass
 
     def trans(self):
@@ -195,17 +187,19 @@ class Cartesian(Set):
     def sym(self):
         pass
 
-class Relation(Cartesian):
-    #Relationen sind Teilmengen von Kartesischen produkten. Sie sind alse eine Menge
-    #von tupeln. Für all diese Tupel gilt eine bestimmte Elementarrelation( Also:
-    #alle Tupel in R erfüllen eine Funktion (hier func)).Diese Wertet zu Wahr oder Falsch aus
-    #Zb. (junge,junge) erfüllt die Funktion "maybe gey" und deshalb ist das Tupel element von R
-    #, aber(mädel,mädel) wäre sicher nicht "maybe ghey", deshalb ist es kein teil von R
-    def __init__(self,a,other,func):
-        super(Relation,self).__init__(a,other)
 
-        #do stuff
+class Relation(Cartesian):
+    # Relationen sind Teilmengen von Kartesischen produkten. Sie sind alse eine Menge
+    # von tupeln. Für all diese Tupel gilt eine bestimmte Elementarrelation( Also:
+    # alle Tupel in R erfüllen eine Funktion (hier func)).Diese Wertet zu Wahr oder Falsch aus
+    # Zb. (junge,junge) erfüllt die Funktion "maybe gey" und deshalb ist das Tupel element von R,
+    # aber(mädel,mädel) wäre sicher nicht "maybe ghey", deshalb ist es kein teil von R
+    def __init__(self, a, other, func):
+        super(Relation, self).__init__(a, other)
+
+        # do stuff
         R = self.subset(func)
+
 
 # Aufgabe 3.1.2
 def neumann_numbers(n, the_set = Set()):
@@ -215,6 +209,7 @@ def neumann_numbers(n, the_set = Set()):
     else:
         return the_set
 
+
 def binomialCoefficients(num):
     temp = Set(*(i for i in range(num)))
     temp = temp.powerset()
@@ -223,8 +218,6 @@ def binomialCoefficients(num):
         result[len(i)] += 1
 
     return result
-
-
 
 
 class RandomObject:
@@ -241,8 +234,8 @@ if __name__ == "__main__":
     c = a*b
     print(c)
     print(len(c))
-    #print(a.powerset())
-    #print(b)
+    # print(a.powerset())
+    # print(b)
     print(neumann_numbers(8))
     print(len(neumann_numbers(8)))
     print(binomialCoefficients(3))
