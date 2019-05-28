@@ -229,8 +229,8 @@ class RandomObject:
 
 
 if __name__ == "__main__":
-    a = Set(1, 2,6,4)
-    b = Set(2,3,"c")
+    a = Set(1, 2, 6, 4)
+    b = Set(2, 3, "c")
     c = a*b
     print(c)
     print(len(c))
