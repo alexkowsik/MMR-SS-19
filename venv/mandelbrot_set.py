@@ -21,11 +21,8 @@ class MandelbrotMenge():
         self.interval1 = [-2, 1]
         self.interval2 = [1, -1]
         self.zoom = 1
-
         self.X = None
-        self.Y = None
-        self.NUMS = None
-        self.count = None
+        self.y = None
 
         self.mandelbrot(self.interval1, self.interval2)
 
@@ -34,15 +31,15 @@ class MandelbrotMenge():
     def mandelbrot(self, interval1, interval2):
         self.X = np.linspace(interval1[0], interval1[1], self.width).reshape((1, self.width))
         self.Y = np.linspace(interval2[0], interval2[1], self.height).reshape((self.height, 1))
-        self.NUMS = np.tile(self.X, (self.height, 1)) + 1j * np.tile(self.Y, (1, self.width))
+        NUMS = np.tile(self.X, (self.height, 1)) + 1j * np.tile(self.Y, (1, self.width))
 
-        self.count = np.zeros([self.height, self.width], dtype=np.uint8)
+        count = np.zeros([self.height, self.width], dtype=np.uint8)
 
         for i in range(self.height):
             for j in range(self.width):
-                self.count[i, j] =  self.seqenceCounter(self.NUMS[i, j])
+                count[i, j] =  self.seqenceCounter(NUMS[i, j])
 
-        self.draw(self.count)
+        self.draw(count)
 
 
     def seqenceCounter(self, c):
@@ -74,15 +71,11 @@ class MandelbrotMenge():
         x = QMouseEvent.x()
         y = QMouseEvent.y()
 
-        newW = (abs(self.interval1[0]) + abs(self.interval1[1])) / 4
-        newH = (abs(self.interval2[0]) + abs(self.interval2[1])) / 4
-
-        print(newW, newH, x, y, self.X[0][x], self.Y[y][0])
+        newW = abs(self.interval1[0] - self.interval1[1]) / 4
+        newH = abs(self.interval2[0] - self.interval2[1]) / 4
 
         self.interval1 = [self.X[0][x] - newW, self.X[0][x] + newW]
         self.interval2 = [self.Y[y][0] + newH, self.Y[y][0] - newH]
-
-        print(self.interval1, self.interval2)
 
         self.mandelbrot(self.interval1, self.interval2)
 
