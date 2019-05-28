@@ -16,26 +16,33 @@ class MandelbrotMenge():
         self.display.setGeometry(400, 150, self.width, self.height)
         self.display.mousePressEvent = self.MousePressEvent
 
+        self.colormap = plt.cm.jet
+
         self.interval1 = [-2, 1]
         self.interval2 = [1, -1]
+        self.zoom = 1
+
+        self.X = None
+        self.Y = None
         self.NUMS = None
+        self.count = None
 
         self.mandelbrot(self.interval1, self.interval2)
 
 
 
     def mandelbrot(self, interval1, interval2):
-        X = np.linspace(interval1[0], interval1[1], self.width).reshape((1, self.width))
-        Y = np.linspace(interval2[0], interval2[1], self.height).reshape((self.height, 1))
-        self.NUMS = np.tile(X, (self.height, 1)) + 1j * np.tile(Y, (1, self.width))
+        self.X = np.linspace(interval1[0], interval1[1], self.width).reshape((1, self.width))
+        self.Y = np.linspace(interval2[0], interval2[1], self.height).reshape((self.height, 1))
+        self.NUMS = np.tile(self.X, (self.height, 1)) + 1j * np.tile(self.Y, (1, self.width))
 
-        count = np.zeros([self.height, self.width], dtype=np.uint8)
+        self.count = np.zeros([self.height, self.width], dtype=np.uint8)
 
         for i in range(self.height):
             for j in range(self.width):
-                count[i, j] =  self.seqenceCounter(self.NUMS[i, j])
+                self.count[i, j] =  self.seqenceCounter(self.NUMS[i, j])
 
-        self.draw(count)
+        self.draw(self.count)
 
 
     def seqenceCounter(self, c):
@@ -54,8 +61,7 @@ class MandelbrotMenge():
         if max == 0:
             max = 1
         count = (count - min) / max
-        colormap = plt.cm.plasma
-        colfloat = colormap(count)
+        colfloat = self.colormap(count)
         colint = np.asarray(colfloat * 255, dtype=np.uint8)
 
         img = qg.QImage(colint.data, self.width, self.height, qg.QImage.Format_RGBA8888)
@@ -65,7 +71,21 @@ class MandelbrotMenge():
 
 
     def MousePressEvent(self, QMouseEvent):
-        // Zoom Funktion zunächst mal rausgenommen, mache es morgen fertig
+        x = QMouseEvent.x()
+        y = QMouseEvent.y()
+
+        newW = (abs(self.interval1[0]) + abs(self.interval1[1])) / 4
+        newH = (abs(self.interval2[0]) + abs(self.interval2[1])) / 4
+
+        print(newW, newH, x, y, self.X[0][x], self.Y[y][0])
+
+        self.interval1 = [self.X[0][x] - newW, self.X[0][x] + newW]
+        self.interval2 = [self.Y[y][0] + newH, self.Y[y][0] - newH]
+
+        print(self.interval1, self.interval2)
+
+        self.mandelbrot(self.interval1, self.interval2)
+
 
 
 if __name__ == "__main__":
