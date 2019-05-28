@@ -63,9 +63,8 @@ class Set:
         temp_key = self.hashed(item)
         return self.content.get(temp_key) is not None
 
-    def __getitem__(self, item):
-        temp_key = self.hashed(item)
-        return self.content.get(temp_key)
+    def __getitem__(self, key):
+        return self.content.get(key)
 
     def __str__(self, start=0, stop=None):
         if len(self) == 0:
@@ -149,6 +148,9 @@ class Set:
     def additem(self, item):
         temp_key = self.hashed(item)
         self.content[temp_key] = item
+
+    def getkey(self, item):
+        return self.hashed(item)
 
     def removeitem(self, item):
         if not self.__contains__(item):
