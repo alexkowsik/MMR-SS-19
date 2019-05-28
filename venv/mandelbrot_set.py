@@ -1,12 +1,11 @@
 import sys
-from PyQt5.QtCore import Qt
 from PyQt5 import QtWidgets as qw
 from PyQt5 import QtGui as qg
-from PyQt5 import QtCore as qc
 import numpy as np
 import matplotlib.pyplot as plt
 
-class MandelbrotMenge():
+
+class MandelbrotMenge:
 
     def __init__(self):
         self.width = 600
@@ -26,8 +25,6 @@ class MandelbrotMenge():
 
         self.mandelbrot(self.interval1, self.interval2)
 
-
-
     def mandelbrot(self, interval1, interval2):
         self.X = np.linspace(interval1[0], interval1[1], self.width).reshape((1, self.width))
         self.Y = np.linspace(interval2[0], interval2[1], self.height).reshape((self.height, 1))
@@ -37,10 +34,9 @@ class MandelbrotMenge():
 
         for i in range(self.height):
             for j in range(self.width):
-                count[i, j] =  self.seqenceCounter(NUMS[i, j])
+                count[i, j] = self.seqenceCounter(NUMS[i, j])
 
         self.draw(count)
-
 
     def seqenceCounter(self, c):
         n = 100
@@ -50,7 +46,6 @@ class MandelbrotMenge():
             if z > 2:
                 return i
         return n
-
 
     def draw(self, count):
         max = np.max(count)
@@ -65,7 +60,6 @@ class MandelbrotMenge():
 
         self.display.setPixmap(qg.QPixmap.fromImage(img))
         self.display.show()
-
 
     def MousePressEvent(self, QMouseEvent):
         x = QMouseEvent.x()
@@ -84,7 +78,6 @@ class MandelbrotMenge():
         self.interval2 = [self.Y[y][0] + newH, self.Y[y][0] - newH]
 
         self.mandelbrot(self.interval1, self.interval2)
-
 
 
 if __name__ == "__main__":
