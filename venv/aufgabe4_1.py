@@ -46,10 +46,10 @@ def teila():
         next = deriv[i]
         if next != 0:
             if (prev < 0 and next > 0):
-                plt.plot(np.arange(-30, 15, h)[1 + alternativ + i], [prev], 'g.',ms = 20)
+                plt.plot(np.arange(-30, 15, h)[1 + alternativ + i], [poly[i]], 'g.',ms = 20)
 
             if (prev > 0 and next < 0):
-                plt.plot(np.arange(-30, 15, h)[1 + alternativ + i], [prev], 'c.',ms = 20)
+                plt.plot(np.arange(-30, 15, h)[1 + alternativ + i], [poly[i]], 'c.',ms = 20)
 
             prev = next
     plt.text(-32,17,"Cyan Punkt: HP\nGreen Punkt: TP\n"
@@ -59,7 +59,7 @@ def teila():
 
 def teilapraxis():
     plt.style.use('seaborn-whitegrid')
-    h = 0.01
+    h = 10
     xcoords = np.arange(-10,10,h)
     #wenn sin(1/x)
     xcoords = np.delete(xcoords,np.where(xcoords == 0),axis = 0)
@@ -91,9 +91,20 @@ def teilapraxis():
     plt.show()
 
 def teilb():
-    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skippe header
-
+    plt.style.use('seaborn-whitegrid')
     x_limiter = 520
+    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skippe header
+    poits_to_evaluate = 500  # anzahl der punkte die man plotten/evaluaten möchte
+    x = np.linspace(0, poits_to_evaluate - 1, poits_to_evaluate)  # x-coords
+    y = np.array(measurements[0:poits_to_evaluate, 6])  # y-werte an x-coords
+    coeff = np.polyfit(x, y, 4)  # erstellt ein polynom aus den messwerten
+
+    p = np.poly1d(coeff)
+    h = 7
+    xcoords = np.arange(-20, x_limiter, h)
+    ycoords = np.vectorize(p)(xcoords)
+
+
     interval = 10 * x_limiter + 1
     ylim_for_plots = [-20, 100]
     xlim_for_plots = [-20, x_limiter]
@@ -119,34 +130,77 @@ def teilb():
         l_vectors[i] *= y[i]
 
     reduced = np.add.reduce(l_vectors)
-    h = 0.01
-    xcoords = np.arange(-20, x_limiter, h)
-    derive = np.zeros(reduced.shape[0] - 1)
+
+    derive = np.zeros(ycoords.shape[0] - 1)
+
     alternativ = True
     if (alternativ):
-        for i in range(1, reduced.shape[0] - 1):
-            derive[i] = (reduced[i + 1] - reduced[i - 1]) / 2 * h
+        for i in range(1, ycoords.shape[0] - 1):
+            derive[i] = (ycoords[i + 1] - ycoords[i - 1]) / 2 * h
     else:
-        for i in range(reduced.shape[0] - 1):
-            derive[i] = (reduced[i + 1] - reduced[i]) / h
+        for i in range(ycoords.shape[0] - 1):
+            derive[i] = (ycoords[i + 1] - ycoords[i]) / h
 
-
+#poly interpolation
     subp1 = plt.subplot()
     subp1.set_xlim(xlim_for_plots)
     subp1.set_ylim(ylim_for_plots)
     subp1.plot(x, reduced, 'b-')
 
-#new plot
+#num derviation
     subp3 = subp1.twinx()
-    subp3.plot(derive,x[:-1], 'y-.')
+    subp3.plot(xcoords[alternativ:-1],derive[alternativ:], 'y-.')
     subp3.set_ylim(ylim_for_plots)
     subp3.set_xlim(xlim_for_plots)
-#end plot
+#polyfit
     subp2 = subp1.twinx()
-    subp2.plot(b, y, 'r.', markersize=12)
+    subp2.plot(xcoords,ycoords, 'r-', markersize=6)
     subp2.set_ylim(ylim_for_plots)
     subp2.set_xlim(xlim_for_plots)
+#polyfits derivation
+    subp4 = subp1.twinx()
+   # subp4.plot(xcoords, np.vectorize(p.deriv())(xcoords), 'g-', markersize=6)
+    subp4.set_ylim(ylim_for_plots)
+    subp4.set_xlim(xlim_for_plots)
 
+
+#HP/TP
+    if alternativ:
+        prev = derive[1]
+    else:
+        prev = derive[0]
+
+    HP = []
+    TP = []
+    for i in range(1+alternativ,derive.shape[0]-1):
+        next = derive[i]
+        if next != 0:
+            if (prev < 0 and next > 0):
+                #plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'g.',ms = 20)
+                TP.append((ycoords[i], i))
+
+            if (prev > 0 and next < 0):
+                #plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'c.',ms = 20)
+                HP.append((ycoords[i], i))
+
+            prev = next
+    max = HP[0]
+    for thing in HP:
+        if thing[0] > max[0]:
+            max = thing
+    plt.plot(np.arange(-20, x_limiter, h)[alternativ + max[1]], [ycoords[max[1]]], 'c.', ms=20)
+
+    max = TP[0]
+    for thing in TP:
+        if thing[0] < max[0]:
+            max = thing
+    plt.plot(np.arange(-20, x_limiter, h)[alternativ + max[1]], [ycoords[max[1]]], 'g.', ms=20)
+
+
+#anm.: Werte zu fein für num ableitung?
+
+    plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion\nGelbe Linie: num Abl"
+                     "\nGrüne Linie: poly.derive()", fontsize=12)
 
     plt.show()
 
