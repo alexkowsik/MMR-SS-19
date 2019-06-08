@@ -1,8 +1,8 @@
 from math import sin, cos, tan, exp, log, e, pi
 
+
+
 class Function:
-    def __call__(self, x):
-        pass
 
     def __add__(self, g):
         if isinstance(g, Function):
@@ -39,6 +39,7 @@ class Function:
             return CompFunction(self, g)
         else:
             return CompFunction(self, ConstFunction(g))
+
 
 
 class AddFunction(Function):
@@ -136,14 +137,17 @@ class Log(Function):
 
 
 
-krasserTangens = Sin() / Cos()
-weirdF = krasserTangens + Exp()
-threeF = ConstFunction(3.14) ** Identity()
-lastF = threeF * 7
+if __name__ == '__main__':
+    tangens = Sin() / Cos()
+    tangensWithE = tangens + Exp()
+    pieFunction = ConstFunction(3.14) ** Identity()
+    sevenPieFunction = pieFunction * 7
+    addFunction = ConstFunction(4) + 3
 
-print(krasserTangens(42), tan(42))
-print(weirdF(13.37), tan(13.37) + exp(13.37))
-print(threeF(pi), 3.14**pi)
-print(lastF(23), 3.14**23 * 7)
+    print(tangens(42), tan(42))
+    print(tangensWithE(13.37), tan(13.37) + exp(13.37))
+    print(pieFunction(pi), 3.14**pi)
+    print(sevenPieFunction(23), 3.14**23 * 7)
+    print(addFunction(4))
 
-print("jup, scheint zu klappen")
+    print("jup, scheint zu klappen")
