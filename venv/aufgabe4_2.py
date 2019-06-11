@@ -1,7 +1,6 @@
 from math import sin, cos, tan, exp, log, e, pi
 
 
-
 class Function:
 
     def __add__(self, g):
@@ -39,7 +38,6 @@ class Function:
             return CompFunction(self, g)
         else:
             return CompFunction(self, ConstFunction(g))
-
 
 
 class AddFunction(Function):
@@ -85,6 +83,7 @@ class PowFunction(Function):
 
     def __call__(self, x):
         return self.f(x)**self.g(x)
+
 
 class CompFunction(Function):
     def __init__(self, f, g):
@@ -134,7 +133,6 @@ class Log(Function):
 
     def __call__(self, x):
         return log(x, self.base)
-
 
 
 if __name__ == '__main__':

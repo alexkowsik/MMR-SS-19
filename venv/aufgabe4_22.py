@@ -34,9 +34,6 @@ class DualNumber:
         return "(" + str(self.val) + ", " + str(self.der) + ")"
 
 
-
-
-
 class DualFunction(aufgabe4_2.Function):
     def __add__(self, g):
         return AddFunction(self, g)
@@ -55,8 +52,6 @@ class DualFunction(aufgabe4_2.Function):
 
     def __matmul__(self, g):
         return CompFunction(self, g)
-
-
 
 
 class AddFunction(DualFunction):
@@ -192,4 +187,4 @@ if __name__ == '__main__':
     impossible = Sin() @ (ConstFunction(1) / Identity())
     print(impossible(5))
     print(sin(1/5), cos(1/5) * -1/25)
-    #print(impossible(0)) hehe
+    # print(impossible(0)) # hehe
