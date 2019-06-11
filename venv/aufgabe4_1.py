@@ -264,17 +264,95 @@ def teilb():
     for thing in TP:
         if thing[0] < max[0]:
             max = thing
-    plt.plot(xa[alternativ + max[1]], [ya[max[1]]], 'g.', ms=20)
-
-
-#anm.: Werte zu fein für num ableitung?
 
     plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion durch polyfit \nGelbe Linie: num Abl"
-                     "\nBlaue Liie: Messwerte", fontsize=12)
+                                     "\nBlaue Liie: Messwerte", fontsize=12)
+    plt.plot(xa[alternativ + max[1]], [ya[max[1]]], 'g.', ms=20)
 
+    plt.show()
+
+
+def approxAbl():
+
+    #das ist der modifizierte code aus woche 2. Berechne hier MLS mit polyfit
+    # und gleichzeitig die ableitung mittels der derive() -funktion von poly1d
+    # diese berechnet die ableitug von dem geftitteten polynom.
+    # die berechnung findet in der for schleife mit dem fenster statt, an dieser stelle
+    # unterscheidet sich der code von dem , was wir zu week 2 gemacht haben
+    # die ableitung lässt sich aber auch so berechnen: man multipliziert das i-te element mit i
+    # im ganzen array und dann verschiebt man das i-te element an die (i-1)-te
+    # Stelle im array, wobei man von rechts anfängt(damit keine elemente überschrieben
+    # werden) und das element ganz rechts ion der liste fällt weg, die liste wird um 1
+    # element kürzer. Beim Ableiten werden ja alle koeffizienten mit der potenz multipliziert
+    # und die Potenz wird um1  kleiner
+    plt.style.use('seaborn-whitegrid')
+    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skippe header
+    x = measurements[:, 6]  # Temperatur-Daten
+
+    # Temp plotten
+    x_coords = np.arange(0, x.shape[0])
+
+    ax1 = plt.subplot()
+    ax1.plot(x_coords, x, 'r.')
+    ax1.set_xlabel('Zeitpunkt')
+    ax1.set_ylabel('Temp', color='r')
+
+
+
+    # In Step die Größe des Fensters einstellen
+    mls = np.zeros(x.shape[0])
+    h = 60
+    x_coordsA = np.zeros(x.shape[0])
+    deriv = np.zeros(x.shape[0])
+
+    for i in range(x.shape[0] - h):
+        x_coordsA[i] = i + h / 2
+        coeff = np.polyfit(x_coords[i:i+h], x[i:i+h], 5)
+        p = np.poly1d(coeff)
+        #berechne hier die ableitung auf die faule art und weise
+        q = np.poly1d(coeff).deriv()
+        mls[i] = p(x_coordsA[i])
+        deriv[i] = q(x_coordsA[i])
+
+    ax1.plot(x_coordsA[:-h], mls[:-h], color="y")
+
+    ax2 = plt.subplot()
+    ax2.plot(x_coordsA[:-h], deriv[:-h], 'm-')
+    ax2.set_xlabel('Zeitpunkt')
+    ax2.set_ylabel('num. Ableitung', color='y')
+
+    # HP/TP
+    prev = deriv[0]
+    HP = []
+    TP = []
+    for i in range(1 , deriv.shape[0] - 1):
+        next = deriv[i]
+        if next != 0:
+            if (prev < 0 and next > 0):
+                TP.append((mls[i], i))
+
+            if (prev > 0 and next < 0):
+                HP.append((mls[i], i))
+
+            prev = next
+
+    max = HP[0]
+    for thing in HP:
+        if thing[0] > max[0]:
+            max = thing
+
+    plt.plot(x_coordsA[max[1]], [mls[max[1]]], 'c.', ms=20)
+
+    max = TP[0]
+    for thing in TP:
+        if thing[0] < max[0]:
+            max = thing
+    plt.plot(x_coordsA[max[1]], [mls[max[1]]], 'g.', ms=20)
 
 
     plt.show()
+
+
 #unterschiedliche h: immer genauer an errechneter Ableitung, aber immer noh versetzt
 #alternative def: linke seite hebt vom errechneten wert genauso wie die rechte ab
 if __name__=="__main__":
