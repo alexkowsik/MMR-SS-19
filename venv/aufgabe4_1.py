@@ -164,27 +164,26 @@ def teilb():
     # das leigt daran, dass die messdaten an sich stark schwanken
     # Extremstellen erkennen funktionieren aber gut
 
-    #Erstelle Polynpom aus Messwerten an points-to-evaluate vielen STellen
+    # Erstelle Polynpom aus Messwerten an 'points-to-evaluate'-vielen Stellen
     plt.style.use('seaborn-whitegrid')
-    x_limiter = 520     #bis zu welchem Punk tim DAtensatz man auswerten möchte
-    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skippe header
-    poits_to_evaluate = 500  # anzahl der punkte die man plotten/evaluaten möchte
+    x_limiter = 520     # bis zu welchem Punk im Datensatz man auswerten möchte
+    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skip header
+    poits_to_evaluate = 500  # Anzahl der Punkte die man plotten/evaluaten möchte
     xa = np.linspace(0, poits_to_evaluate - 1, poits_to_evaluate)  # x-coords
-    ya = np.array(measurements[0:poits_to_evaluate, 6])  # y-werte an x-coords
-    coeff = np.polyfit(xa, ya, 4)  # erstellt ein polynom aus den messwerten
+    ya = np.array(measurements[0:poits_to_evaluate, 6])  # Y-Werte an x-coords
+    coeff = np.polyfit(xa, ya, 4)  # erstellt ein Polynom aus den Messwerten
 
-    #Benutze hier das Polynom der Messwerte um die Ableitung zu berechnen
+    # Benutze hier das Polynom der Messwerte um die Ableitung zu berechnen
     p = np.poly1d(coeff)
     h = 1
     xcoords = np.arange(-20, x_limiter, h)
     ycoords = np.vectorize(p)(xcoords)
 
-
     interval = 10 * x_limiter + 1
     ylim_for_plots = [-20, 100]
     xlim_for_plots = [-20, x_limiter]
     x = np.linspace(-20, x_limiter, interval)
-    b = np.linspace(0, measurements.shape[0] - 1, 6)  # stützstellen
+    b = np.linspace(0, measurements.shape[0] - 1, 6)  # Stützstellen
 
     temp = []
     for i in b:
@@ -209,37 +208,37 @@ def teilb():
     derive = np.zeros(ya.shape[0] - 1)
 
     alternativ = True
-    if (alternativ):
+    if alternativ:
         for i in range(1, ya.shape[0] - 1):
             derive[i] = (ya[i + 1] - ya[i - 1]) / 2 * h
     else:
         for i in range(ycoords.shape[0] - 1):
             derive[i] = (ya[i + 1] - ya[i]) / h
 
-#poly interpolation
+# poly interpolation
     subp1 = plt.subplot()
     subp1.set_xlim(xlim_for_plots)
     subp1.set_ylim(ylim_for_plots)
-    subp1.plot(xa, ya, 'b-')        #x,reduced
+    subp1.plot(xa, ya, 'b-')        # x,reduced
 
-#num derviation
+# num derviation
     subp3 = subp1.twinx()
-    subp3.plot(xa[alternativ:-1],derive[alternativ:], 'y-.')
+    subp3.plot(xa[alternativ:-1], derive[alternativ:], 'y-.')
     subp3.set_ylim(ylim_for_plots)
     subp3.set_xlim(xlim_for_plots)
-#polyfit
+# polyfit
     subp2 = subp1.twinx()
-    subp2.plot(xcoords,ycoords, 'r-', markersize=6)
+    subp2.plot(xcoords, ycoords, 'r-', markersize=6)
     subp2.set_ylim(ylim_for_plots)
     subp2.set_xlim(xlim_for_plots)
-#polyfits derivation
+# polyfits derivation
     subp4 = subp1.twinx()
-    #subp4.plot(xcoords, np.vectorize(p.deriv())(xcoords), 'g-', markersize=6)
+    # subp4.plot(xcoords, np.vectorize(p.deriv())(xcoords), 'g-', markersize=6)
     subp4.set_ylim(ylim_for_plots)
     subp4.set_xlim(xlim_for_plots)
 
 
-#HP/TP
+# HP/TP
     if alternativ:
         prev = derive[1]
     else:
@@ -247,13 +246,13 @@ def teilb():
 
     HP = []
     TP = []
-    for i in range(1+alternativ,derive.shape[0]-1):
+    for i in range(1+alternativ, derive.shape[0]-1):
         next = derive[i]
         if next != 0:
-            if (prev < 0 and next > 0):
+            if prev < 0 < next:
                 TP.append((ya[i], i))
 
-            if (prev > 0 and next < 0):
+            if prev > 0 > next:
                 HP.append((ya[i], i))
 
             prev = next
@@ -269,8 +268,8 @@ def teilb():
         if thing[0] < max[0]:
             max = thing
 
-    plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion durch polyfit \nGelbe Linie: num Abl"
-                                     "\nBlaue Liie: Messwerte", fontsize=12)
+    plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion durch polyfit \nGelbe Linie: num Abl\n"
+                                     "Blaue Liie: Messwerte", fontsize=12)
     plt.plot(xa[alternativ + max[1]], [ya[max[1]]], 'g.', ms=20)
 
     plt.show()
@@ -278,19 +277,19 @@ def teilb():
 
 def approxAbl():
 
-    #das ist der modifizierte code aus woche 2. Berechne hier MLS mit polyfit
-    # und gleichzeitig die ableitung mittels der derive() -funktion von poly1d
-    # diese berechnet die ableitug von dem geftitteten polynom.
-    # die berechnung findet in der for schleife mit dem fenster statt, an dieser stelle
-    # unterscheidet sich der code von dem , was wir zu week 2 gemacht haben
-    # die ableitung lässt sich aber auch so berechnen: man multipliziert das i-te element mit i
-    # im ganzen array und dann verschiebt man das i-te element an die (i-1)-te
-    # Stelle im array, wobei man von rechts anfängt(damit keine elemente überschrieben
-    # werden) und das element ganz rechts ion der liste fällt weg, die liste wird um 1
-    # element kürzer. Beim Ableiten werden ja alle koeffizienten mit der potenz multipliziert
-    # und die Potenz wird um1  kleiner
+    # Das ist der modifizierte Code aus Woche 2. Berechne hier MLS mit polyfit
+    # und gleichzeitig die Ableitung mittels der derive()-Funktion von poly1d.
+    # Diese berechnet die Ableitug von dem geftitteten Polynom.
+    # Die Berechnung findet in der for-Schleife mit dem Fenster statt. An dieser Stelle
+    # unterscheidet sich der Code von dem, was wir zu week 2 gemacht haben.
+    # Die Ableitung lässt sich aber auch so berechnen: man multipliziert das i-te Element mit i
+    # im ganzen Array und dann verschiebt man das i-te Element an die (i-1)-te
+    # Stelle im Array, wobei man von rechts anfängt(damit keine Elemente überschrieben
+    # werden) und das Element ganz rechts in der Liste fällt weg. Die Liste wird um 1
+    # Element kürzer. Beim Ableiten werden ja alle Koeffizienten mit der Potenz multipliziert
+    # und die Potenz wird um 1 kleiner.
     plt.style.use('seaborn-whitegrid')
-    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skippe header
+    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skip header
     x = measurements[:, 6]  # Temperatur-Daten
 
     # Temp plotten
@@ -300,8 +299,6 @@ def approxAbl():
     ax1.plot(x_coords, x, 'r.')
     ax1.set_xlabel('Zeitpunkt')
     ax1.set_ylabel('Temp', color='r')
-
-
 
     # In Step die Größe des Fensters einstellen
     mls = np.zeros(x.shape[0])
@@ -313,7 +310,7 @@ def approxAbl():
         x_coordsA[i] = i + h / 2
         coeff = np.polyfit(x_coords[i:i+h], x[i:i+h], 5)
         p = np.poly1d(coeff)
-        #berechne hier die ableitung auf die faule art und weise
+        # berechne hier die Ableitung auf die faule Art
         q = np.poly1d(coeff).deriv()
         mls[i] = p(x_coordsA[i])
         deriv[i] = q(x_coordsA[i])
@@ -329,13 +326,13 @@ def approxAbl():
     prev = deriv[0]
     HP = []
     TP = []
-    for i in range(1 , deriv.shape[0] - 1):
+    for i in range(1, deriv.shape[0] - 1):
         next = deriv[i]
         if next != 0:
-            if (prev < 0 and next > 0):
+            if prev < 0 < next:
                 TP.append((mls[i], i))
 
-            if (prev > 0 and next < 0):
+            if prev > 0 > next:
                 HP.append((mls[i], i))
 
             prev = next
@@ -353,11 +350,11 @@ def approxAbl():
             max = thing
     plt.plot(x_coordsA[max[1]], [mls[max[1]]], 'g.', ms=20)
 
-
     plt.show()
 
+# unterschiedliche h: immer genauer an errechneter Ableitung, aber immer noh versetzt
+# alternative def: linke und rechte Seiten heben gleichermaßen vom errechneten Wert ab
 
-#unterschiedliche h: immer genauer an errechneter Ableitung, aber immer noh versetzt
-#alternative def: linke seite hebt vom errechneten wert genauso wie die rechte ab
-if __name__=="__main__":
+
+if __name__ == "__main__":
     teilb()
