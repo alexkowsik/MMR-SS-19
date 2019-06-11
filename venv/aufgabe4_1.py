@@ -51,9 +51,10 @@ def teila():
         for i in range(poly.shape[0] - 1):
             deriv[i] = (poly[i + 1] - poly[i]) / h
 
-    # Plot für Das Polynom an sich
+
+    #plot für Das Polynom an sich
     ax1 = plt.subplot()
-    ax1.plot(np.arange(-30, 15, h), poly, 'r-', label = 'funkt')
+    ax1.plot(np.arange(-30,15,h),poly, 'r-', label = 'funkt')
     ax1.set_ylim(-15, 25)
 
     # Plot für die numerische Ableitung
@@ -158,24 +159,26 @@ def teilapraxis():
 
 
 def teilb():
-    # Was hier passiert: Man wählt aus, wie viele Messwerte man betrachet und fittet aus diesen ein Polynom.
-    # Das Polynom verwendet man dann genau wie in Teil a
-    # zusätzlich plotte ich hier die Polynominterpolation zum Vergleich(kann man natürlich bei Plots auskommentieren)
+    # Was hier Passiert: man trägt die messwerte auf und berechnet die ableitung wie in teil a.
+    # für h <1 ist die ableitung fast eine gerade und für große h > 1 schwankt sie stark und ist schwer leserlich.
+    # das leigt daran, dass die messdaten an sich stark schwanken
+    # Extremstellen erkennen funktionieren aber gut
 
-    # Erstelle Polynom aus Messwerten an 'points-to-evaluate'-vielen Stellen
+    #Erstelle Polynpom aus Messwerten an points-to-evaluate vielen STellen
     plt.style.use('seaborn-whitegrid')
-    x_limiter = 520     # bis zu welchem Punk im Datensatz man auswerten möchte
-    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skip header
-    poits_to_evaluate = 500  # Anzahl der Punkte die man plotten/evaluaten möchte
-    x = np.linspace(0, poits_to_evaluate - 1, poits_to_evaluate)  # x-coords
-    y = np.array(measurements[0:poits_to_evaluate, 6])  # Y-Werte an x-coords
-    coeff = np.polyfit(x, y, 4)  # erstellt ein Polynom aus den Messwerten
+    x_limiter = 520     #bis zu welchem Punk tim DAtensatz man auswerten möchte
+    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skippe header
+    poits_to_evaluate = 500  # anzahl der punkte die man plotten/evaluaten möchte
+    xa = np.linspace(0, poits_to_evaluate - 1, poits_to_evaluate)  # x-coords
+    ya = np.array(measurements[0:poits_to_evaluate, 6])  # y-werte an x-coords
+    coeff = np.polyfit(xa, ya, 4)  # erstellt ein polynom aus den messwerten
 
-    # Benutze hier das Polynom der Messwerte um die Ableitung zu berechnen
+    #Benutze hier das Polynom der Messwerte um die Ableitung zu berechnen
     p = np.poly1d(coeff)
-    h = 7
+    h = 1
     xcoords = np.arange(-20, x_limiter, h)
     ycoords = np.vectorize(p)(xcoords)
+
 
     interval = 10 * x_limiter + 1
     ylim_for_plots = [-20, 100]
@@ -203,37 +206,38 @@ def teilb():
 
     reduced = np.add.reduce(l_vectors)
 
-    derive = np.zeros(ycoords.shape[0] - 1)
+    derive = np.zeros(ya.shape[0] - 1)
 
     alternativ = True
-    if alternativ:
-        for i in range(1, ycoords.shape[0] - 1):
-            derive[i] = (ycoords[i + 1] - ycoords[i - 1]) / 2 * h
+    if (alternativ):
+        for i in range(1, ya.shape[0] - 1):
+            derive[i] = (ya[i + 1] - ya[i - 1]) / 2 * h
     else:
         for i in range(ycoords.shape[0] - 1):
-            derive[i] = (ycoords[i + 1] - ycoords[i]) / h
+            derive[i] = (ya[i + 1] - ya[i]) / h
 
-# poly interpolation
+#poly interpolation
     subp1 = plt.subplot()
     subp1.set_xlim(xlim_for_plots)
     subp1.set_ylim(ylim_for_plots)
-    subp1.plot(x, reduced, 'b-')
+    subp1.plot(xa, ya, 'b-')        #x,reduced
 
-# num derviation
+#num derviation
     subp3 = subp1.twinx()
-    subp3.plot(xcoords[alternativ:-1], derive[alternativ:], 'y-.')
+    subp3.plot(xa[alternativ:-1],derive[alternativ:], 'y-.')
     subp3.set_ylim(ylim_for_plots)
     subp3.set_xlim(xlim_for_plots)
-# polyfit
+#polyfit
     subp2 = subp1.twinx()
-    subp2.plot(xcoords, ycoords, 'r-', markersize=6)
+    subp2.plot(xcoords,ycoords, 'r-', markersize=6)
     subp2.set_ylim(ylim_for_plots)
     subp2.set_xlim(xlim_for_plots)
-# polyfits derivation
+#polyfits derivation
     subp4 = subp1.twinx()
-    subp4.plot(xcoords, np.vectorize(p.deriv())(xcoords), 'g-', markersize=6)
+    #subp4.plot(xcoords, np.vectorize(p.deriv())(xcoords), 'g-', markersize=6)
     subp4.set_ylim(ylim_for_plots)
     subp4.set_xlim(xlim_for_plots)
+
 
 #HP/TP
     if alternativ:
@@ -243,39 +247,39 @@ def teilb():
 
     HP = []
     TP = []
-    for i in range(1+alternativ, derive.shape[0]-1):
+    for i in range(1+alternativ,derive.shape[0]-1):
         next = derive[i]
         if next != 0:
-            if prev < 0 < next:
-                # plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'g.',ms = 20)
-                TP.append((ycoords[i], i))
+            if (prev < 0 and next > 0):
+                TP.append((ya[i], i))
 
-            if prev > 0 > next:
-                # plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'c.',ms = 20)
-                HP.append((ycoords[i], i))
+            if (prev > 0 and next < 0):
+                HP.append((ya[i], i))
 
             prev = next
     max = HP[0]
     for thing in HP:
         if thing[0] > max[0]:
             max = thing
-    plt.plot(np.arange(-20, x_limiter, h)[alternativ + max[1]], [ycoords[max[1]]], 'c.', ms=20)
+
+    plt.plot(xa[alternativ + max[1]], [ya[max[1]]], 'c.', ms=20)
 
     max = TP[0]
     for thing in TP:
         if thing[0] < max[0]:
             max = thing
-    plt.plot(np.arange(-20, x_limiter, h)[alternativ + max[1]], [ycoords[max[1]]], 'g.', ms=20)
+    plt.plot(xa[alternativ + max[1]], [ya[max[1]]], 'g.', ms=20)
 
 
-# anm.: Werte zu fein für num. Ableitung?
+#anm.: Werte zu fein für num ableitung?
 
-    plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion durch polyfit \nGelbe Linie: num Abl\n"
-                                     "Blaue Linie: Polynominterpolation", fontsize=12)
+    plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion durch polyfit \nGelbe Linie: num Abl"
+                     "\nBlaue Liie: Messwerte", fontsize=12)
+
+
+
     plt.show()
-# unterschiedliche h: immer genauer an errechneter Ableitung, aber immer noch versetzt
-# alternative def: linke und rechte Seite heben gleichermaßen vom errechneten Wert ab.
-
-
-if __name__ == "__main__":
+#unterschiedliche h: immer genauer an errechneter Ableitung, aber immer noh versetzt
+#alternative def: linke seite hebt vom errechneten wert genauso wie die rechte ab
+if __name__=="__main__":
     teilb()
