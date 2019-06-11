@@ -1,83 +1,80 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from math import sin,cos,floor
+from math import sin, cos, floor
 """
 Zur Theoriefrage:
 """
 
 
-#Aufgabe1
+# Aufgabe1
 def teila():
     # Verwendetes Polynom : (x(^3)/200)+2(^-3)(x^2)
-    # IN dem Code fitte ich ein Polynom und werte es an (30+15)*h stellen aus,
-    # d.h. mache ein Gitter mit Paaren (x,f(x)) mit Abstand h zwischen jedem Paar.
-    # Um die Ableitung zu bestimmten muss man also 2 Benachbarte Elemente des
+    # IN dem Code fitte ich ein Polynom und werte es an (30+15)*h Stellen aus,
+    # d.h. mache ein Gitter mit Paaren (x,f(x)) mit Abstand h zwischen den X-Werten jedes Paars.
+    # Um die Ableitung zu bestimmten, muss man also 2 benachbarte Elemente des
     # Arrays mit den ausgewerteten Stellen f(x) in die Formel einsetzen.
     # Die Formel mit 1/h ist in dem Programm zu verwenden, indem man
-    # die variable alternativ auf := False setzt.
+    # die Variable 'alternativ' auf := False setzt.
 
-    #Zur Zusatzfrage: In der Praxis kann das h nur endlich nah an 0 angenähert werden.
-    #Es lässt sich also ein Polynom finden, dass an stele f(x) = a , f(x+h) = a+negl(h)
-    # und f(x-h) = b, wobei a,b beliebig (Also auch ganz weit auseinander) und negl(h) eine
-    # vernachlässigbare funktion. In der Theorie lässt sich kein solches Polynom finden, weil man
-    # h beliebiug klein machen kann.
+    # Zur Zusatzfrage: In der Praxis kann das h nur endlich nah an 0 angenähert werden.
+    # Es lässt sich also ein Polynom finden, dass an Stelle f(x) = a , f(x+h) = a+negl(h)
+    # und f(x-h) = b, wobei a,b beliebig (also auch ganz weit auseinander) und negl(h) eine
+    # vernachlässigbare Funktion. In der Theorie lässt sich kein solches Polynom finden, weil man
+    # h beliebig klein machen kann.
 
-    # je größer h ist, desto mehr weicht die Ableitung von der tatsächlichen ab.
+    # Je größer h ist, desto mehr weicht die Ableitung von der tatsächlichen ab.
     # Je kleiner, desto näher an der tatsächlichen Ableitung (und rechenaufwendiger)
-    # Für das gefundene Polynom stürzt das programm für h>7 ab. oops.
+    # Für das gefundene Polynom stürzt das Programm für h>7 ab. oops.
     # Man kann es aber seeehr klein machen. h = 0.001 ist recht schnell.
 
     # Die alternative Methode ist recht genau für h~1, aber für niedrigere h ist die Ableitung
-    # eine horizontale Gerade(vlt weil die Änderung der Funktion sehr klein Wird, je kleeiner
+    # eine horizontale Gerade(vlt weil die Änderung der Funktion sehr klein wird, je kleiner
     # h ist) und für h>1 wird das Programm sehr ungenau ( Abstand der Punkte zu groß)
 
     plt.style.use('seaborn-whitegrid')
-    h = 2            #h einstellen
-    p = np.poly1d([1/200,2**-3,0,0])
-    # Das Polynom in einem h-feinen Gitter von -30 bis 15 auswerten
+    h = 2            # h einstellen
+    p = np.poly1d([1/200, 2**-3, 0, 0])
+    # Das Polynom in einem h-feinen Gitter von -30 bis 15 ausgewertet
     # wenn man hier die Grenzen für x ändert, muss man es auch unten bei den Plots/HP/TP tun
-    poly = np.vectorize(p)(np.arange(-30,15,h))
+    poly = np.vectorize(p)(np.arange(-30, 15, h))
 
     # Berechnet  hier die Ableitungen mit der ausgewählten Methode
     deriv = np.zeros(poly.shape[0]-1)
-    alternativ  = False             #zum Auswählen der Methode
+    alternativ = False             # zum Auswählen der Methode
 
-    if(alternativ):
-        #Man bekommt keine Ableitung an der ersten und letzten Stelle x
-        for i in range(1,poly.shape[0]-1):
-            deriv[i]= (poly[i+1]-poly[i-1])/2*h
+    if alternativ:
+        # Man bekommt keine Ableitung an der ersten und letzten Stelle x
+        for i in range(1, poly.shape[0]-1):
+            deriv[i] = (poly[i+1]-poly[i-1])/2*h
     else:
         # Man bekommt keine Ableitung an der letzten Stelle x
         for i in range(poly.shape[0] - 1):
             deriv[i] = (poly[i + 1] - poly[i]) / h
 
-
-    #plot für Das Polynom an sich
+    # Plot für Das Polynom an sich
     ax1 = plt.subplot()
-    ax1.plot(np.arange(-30,15,h),poly, 'r-', label = 'funkt')
+    ax1.plot(np.arange(-30, 15, h), poly, 'r-', label = 'funkt')
     ax1.set_ylim(-15, 25)
 
-    #Plot für die numerishce Ableitung
+    # Plot für die numerische Ableitung
     ax2 = ax1.twinx()
-    ax2.plot(np.arange(-30,15,h)[alternativ:-1],deriv[alternativ:],  'b-.',label = 'num. Abl')
-    ax2.set_ylim(-15,25)
+    ax2.plot(np.arange(-30, 15, h)[alternativ:-1], deriv[alternativ:],  'b-.', label = 'num. Abl')
+    ax2.set_ylim(-15, 25)
 
-    #Plot für die symbolische Ableitung, von numpy berchnet
+    # Plot für die symbolische Ableitung, von numpy berchnet
     ax3 = ax1.twinx()
-    ax3.plot(np.arange(-30,15,h),np.vectorize(p.deriv())(np.arange(-30,15,h)),'y--',ms = 15,label = 'symb.Abl')
+    ax3.plot(np.arange(-30, 15, h), np.vectorize(p.deriv())(np.arange(-30, 15, h)), 'y--', ms = 15, label = 'symb.Abl')
     ax3.set_ylim(-15, 25)
 
-    #Plot für die symblische Ableitung, selbst berechnet, das selbe wie was numpy macht
-    #ax4 = ax1.twinx()
-    #ax4.plot(np.arange(-30,15,h),np.vectorize(np.poly1d([3/200,2**-2,0]))(np.arange(-30,15,h)),'y--',ms = 15,label = 'symb.Abl')
-    #ax4.set_ylim(-15, 25)
+    # Plot für die symblische Ableitung, selbst berechnet, das selbe wie was numpy macht
+    # ax4 = ax1.twinx()
+    # ax4.plot(np.arange(-30, 15, h),np.vectorize(np.poly1d([3/200, 2**-2, 0]))(np.arange(-30, 15, h)), 'y--', ms = 15, label = 'symb.Abl')
+    # ax4.set_ylim(-15, 25)
 
-
-    #um die Extrema zu berechnen
-    # iteriere durch die Ableitung und speichere jede Stelle Mit VZwechsel
+    # um die Extrema zu berechnen iteriere durch die Ableitung, speichere jede Stelle Mit VZwechsel,
     # und den Wert des Polynoms an dieser Stelle in ein Array. Suche dann das Maximum(HP)
-    # bzw Minimum(TP) für den Wert des Polynoms und Plotte an diese Stelle entsprechende Punkte
-    #
+    # bzw Minimum(TP) für den Wert des Polynoms und plotte an diese Stelle entsprechende Punkte
+
     if alternativ:
         prev = deriv[1]
     else:
@@ -85,15 +82,15 @@ def teila():
 
     HP = []
     TP = []
-    for i in range(1+alternativ,deriv.shape[0]-1):
+    for i in range(1+alternativ, deriv.shape[0]-1):
         next = deriv[i]
         if next != 0:
-            if (prev < 0 and next > 0):
-                #plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'g.',ms = 20)
+            if prev < 0 < next:
+                # plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'g.', ms = 20)
                 TP.append((poly[i], i))
 
-            if (prev > 0 and next < 0):
-                #plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'c.',ms = 20)
+            if prev > 0 > next:
+                # plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'c.', ms = 20)
                 HP.append((poly[i], i))
 
             prev = next
@@ -101,7 +98,7 @@ def teila():
     for thing in HP:
         if thing[0] > max[0]:
             max = thing
-    plt.plot(np.arange(-30,15, h)[alternativ + max[1]], [poly[max[1]]], 'c.', ms=20)
+    plt.plot(np.arange(-30, 15, h)[alternativ + max[1]], [poly[max[1]]], 'c.', ms=20)
 
     max = TP[0]
     for thing in TP:
@@ -109,28 +106,32 @@ def teila():
             max = thing
     plt.plot(np.arange(-30, 15, h)[alternativ + max[1]], [poly[max[1]]], 'g.', ms=20)
 
-
     plt.show()
 
-def teilapraxis():
-    #benutze heir einfach den code aus dem 1. teil für Sin und Cos
-    #Achtung: Für sin(x) alle zeilen aktivieren, hinter denen sin(x) Steht und alle
-    # auskommentieren, hinter denen sin(1/x) steht. Auch unten beim Plotten
 
-    # die num. ableitung von sin(1/x) ist von der Form her ähnlich zu der symbolischen Abl
-    #, aber um 1 nach unten verschoben. Es scheint, dass f(x+h)-f(x) unegefähr null ist, dh sich
-    # nicht viel unterscheidet
+def teilapraxis():
+    # benutze hier einfach den Code aus dem 1. Teil für Sin und Cos
+
+    # die num. Ableitung von sin(1/x) ist von der Form her ähnlich zu der symbolischen Abl,
+    # aber um 1 nach unten verschoben. Es scheint, dass f(x+h)-f(x) ungefähr Null ist, dh sich
+    # nicht viel zwischen den Ableitungverfahren unterscheidet.
+
+    x = False   # Variable zur Auswahl von x oder 1/x als Argument für den Sinus
+    alternativ = False
+
     plt.style.use('seaborn-whitegrid')
     h = 0.05
-    xcoords = np.arange(-10,10,h)     #es reicht hier die grenzen von x zu ändern!
+    xcoords = np.arange(-10, 10, h)     # es reicht hier die grenzen von x zu ändern!
 
-    xcoords = np.delete(xcoords,np.where(xcoords == 0),axis = 0)    #sin(1/x)
-    ycoords = np.vectorize(sin)(1/xcoords)      #sin(1/x)
-    #ycoords = np.vectorize(sin)(xcoords)      #sin(x)
+    if x:       # sin(x)
+        ycoords = np.vectorize(sin)(xcoords)
+    else:       # sin(1/x)
+        xcoords = np.delete(xcoords, np.where(xcoords == 0), axis = 0)
+        ycoords = np.vectorize(sin)(1/xcoords)
 
     deriv = np.zeros(ycoords.shape[0] - 1)
-    alternativ = False
-    if (alternativ):
+
+    if alternativ:
         for i in range(1, ycoords.shape[0] - 1):
             deriv[i] = (ycoords[i + 1] - ycoords[i - 1]) / 2 * h
     else:
@@ -143,37 +144,38 @@ def teilapraxis():
 
     ax2 = ax1.twinx()
     ax2.plot(xcoords[alternativ:-1], deriv[alternativ:], 'b-.', label='num. Abl')
-    ax2.set_ylim(-1,1)
+    ax2.set_ylim(-1, 1)
 
     ax3 = ax1.twinx()
-    ax3.plot(xcoords, np.vectorize(cos)(1/xcoords), 'y--', ms=15, label='symb.Abl') #sin(1/x)
-    #ax3.plot(xcoords, np.vectorize(cos)(xcoords), 'y--', ms=15, label='symb.Abl')  #sin(x)
+    if x:       # plot sin(x)
+        ax3.plot(xcoords, np.vectorize(cos)(xcoords), 'y--', ms=15, label='symb.Abl')
+    else:       # plot sin(1/x)
+        ax3.plot(xcoords, np.vectorize(cos)(1/xcoords), 'y--', ms=15, label='symb.Abl')
     ax3.set_ylim(-1, 1)
 
-    plt.text(-10,1, "Rote Linie: Funktion\nBlaue Linie: num Abl"
-                      "\nGelbe Linie: Symb. Abl", fontsize=12)
+    plt.text(-10, 1, "Rote Linie: Funktion\nBlaue Linie: num Abl\nGelbe Linie: Symb. Abl", fontsize=12)
     plt.show()
 
+
 def teilb():
-    # Was hier Passiert: Man wählt aus wie viele Messwerte man betrachet und fittet aus diesen ein Polynom.
-    # Das Polynom verwendet man dann genau wie in teil a
-    #zusätzlich potte ich hier die Polynominterpolation, zum vergleich( kann man natürlich bei den plots auskommentieren)
+    # Was hier passiert: Man wählt aus, wie viele Messwerte man betrachet und fittet aus diesen ein Polynom.
+    # Das Polynom verwendet man dann genau wie in Teil a
+    # zusätzlich plotte ich hier die Polynominterpolation zum Vergleich(kann man natürlich bei Plots auskommentieren)
 
-    #Erstelle Polynpom aus Messwerten an points-to-evaluate vielen STellen
+    # Erstelle Polynom aus Messwerten an 'points-to-evaluate'-vielen Stellen
     plt.style.use('seaborn-whitegrid')
-    x_limiter = 520     #bis zu welchem Punk tim DAtensatz man auswerten möchte
-    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skippe header
-    poits_to_evaluate = 500  # anzahl der punkte die man plotten/evaluaten möchte
+    x_limiter = 520     # bis zu welchem Punk im Datensatz man auswerten möchte
+    measurements = np.loadtxt("measurements.txt", skiprows=3)  # skip header
+    poits_to_evaluate = 500  # Anzahl der Punkte die man plotten/evaluaten möchte
     x = np.linspace(0, poits_to_evaluate - 1, poits_to_evaluate)  # x-coords
-    y = np.array(measurements[0:poits_to_evaluate, 6])  # y-werte an x-coords
-    coeff = np.polyfit(x, y, 4)  # erstellt ein polynom aus den messwerten
+    y = np.array(measurements[0:poits_to_evaluate, 6])  # Y-Werte an x-coords
+    coeff = np.polyfit(x, y, 4)  # erstellt ein Polynom aus den Messwerten
 
-    #Benutze hier das Polynom der Messwerte um die Ableitung zu berechnen
+    # Benutze hier das Polynom der Messwerte um die Ableitung zu berechnen
     p = np.poly1d(coeff)
     h = 7
     xcoords = np.arange(-20, x_limiter, h)
     ycoords = np.vectorize(p)(xcoords)
-
 
     interval = 10 * x_limiter + 1
     ylim_for_plots = [-20, 100]
@@ -204,35 +206,34 @@ def teilb():
     derive = np.zeros(ycoords.shape[0] - 1)
 
     alternativ = True
-    if (alternativ):
+    if alternativ:
         for i in range(1, ycoords.shape[0] - 1):
             derive[i] = (ycoords[i + 1] - ycoords[i - 1]) / 2 * h
     else:
         for i in range(ycoords.shape[0] - 1):
             derive[i] = (ycoords[i + 1] - ycoords[i]) / h
 
-#poly interpolation
+# poly interpolation
     subp1 = plt.subplot()
     subp1.set_xlim(xlim_for_plots)
     subp1.set_ylim(ylim_for_plots)
     subp1.plot(x, reduced, 'b-')
 
-#num derviation
+# num derviation
     subp3 = subp1.twinx()
-    subp3.plot(xcoords[alternativ:-1],derive[alternativ:], 'y-.')
+    subp3.plot(xcoords[alternativ:-1], derive[alternativ:], 'y-.')
     subp3.set_ylim(ylim_for_plots)
     subp3.set_xlim(xlim_for_plots)
-#polyfit
+# polyfit
     subp2 = subp1.twinx()
-    subp2.plot(xcoords,ycoords, 'r-', markersize=6)
+    subp2.plot(xcoords, ycoords, 'r-', markersize=6)
     subp2.set_ylim(ylim_for_plots)
     subp2.set_xlim(xlim_for_plots)
-#polyfits derivation
+# polyfits derivation
     subp4 = subp1.twinx()
     subp4.plot(xcoords, np.vectorize(p.deriv())(xcoords), 'g-', markersize=6)
     subp4.set_ylim(ylim_for_plots)
     subp4.set_xlim(xlim_for_plots)
-
 
 #HP/TP
     if alternativ:
@@ -242,15 +243,15 @@ def teilb():
 
     HP = []
     TP = []
-    for i in range(1+alternativ,derive.shape[0]-1):
+    for i in range(1+alternativ, derive.shape[0]-1):
         next = derive[i]
         if next != 0:
-            if (prev < 0 and next > 0):
-                #plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'g.',ms = 20)
+            if prev < 0 < next:
+                # plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'g.',ms = 20)
                 TP.append((ycoords[i], i))
 
-            if (prev > 0 and next < 0):
-                #plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'c.',ms = 20)
+            if prev > 0 > next:
+                # plt.plot(np.arange(-20, x_limiter, h)[alternativ + i], [ycoords[i]], 'c.',ms = 20)
                 HP.append((ycoords[i], i))
 
             prev = next
@@ -267,16 +268,14 @@ def teilb():
     plt.plot(np.arange(-20, x_limiter, h)[alternativ + max[1]], [ycoords[max[1]]], 'g.', ms=20)
 
 
-#anm.: Werte zu fein für num ableitung?
+# anm.: Werte zu fein für num. Ableitung?
 
-    plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion durch polyfit \nGelbe Linie: num Abl"
-                     "\nBlaue Liie: Polynominterpolation", fontsize=12)
-
+    plt.text(-20, ylim_for_plots[1], "Rote Linie: Funktion durch polyfit \nGelbe Linie: num Abl\n"
+                                     "Blaue Linie: Polynominterpolation", fontsize=12)
     plt.show()
+# unterschiedliche h: immer genauer an errechneter Ableitung, aber immer noch versetzt
+# alternative def: linke und rechte Seite heben gleichermaßen vom errechneten Wert ab.
 
 
-    plt.show()
-#unterschiedliche h: immer genauer an errechneter Ableitung, aber immer noh versetzt
-#alternative def: linke seite hebt vom errechneten wert genauso wie die rechte ab
-if __name__=="__main__":
+if __name__ == "__main__":
     teilb()
