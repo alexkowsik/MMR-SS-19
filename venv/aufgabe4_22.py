@@ -2,11 +2,6 @@ from math import sin, cos, tan, exp, log, e, pi
 import aufgabe4_2
 
 
-# TODO: Potenzieren von Funktionen, Rechnen mit Konstanten k ohne ConstFunction(k)
-
-# Kommentiere das alles demnächst mal ordentlich
-
-
 class DualNumber:
     def __init__(self, value, derivative):
         self.val = value
@@ -28,10 +23,13 @@ class DualNumber:
         return DualNumber(self.val / n.val, (self.der * n.val - n.der * self.val) / n.val ** 2)
 
     def __pow__(self, n):
-        return DualNumber(self.val ** n, n * (self.val ** (n - 1)) * self.der)
+        return DualNumber(self.val ** n.val, n.val * (self.val ** (n.val - 1)) * self.der + self.val**n.val * log(self.val, e) * n.der)
 
     def __str__(self):
         return "(" + str(self.val) + ", " + str(self.der) + ")"
+
+
+
 
 
 class DualFunction(aufgabe4_2.Function):
@@ -52,6 +50,8 @@ class DualFunction(aufgabe4_2.Function):
 
     def __matmul__(self, g):
         return CompFunction(self, g)
+
+
 
 
 class AddFunction(DualFunction):
@@ -187,4 +187,8 @@ if __name__ == '__main__':
     impossible = Sin() @ (ConstFunction(1) / Identity())
     print(impossible(5))
     print(sin(1/5), cos(1/5) * -1/25)
-    # print(impossible(0)) # hehe
+    #print(impossible(0)) hehe
+
+    crazy = ConstFunction(3) * (Identity() ** Sin())
+    print(crazy(pi/3))
+    print(3*(pi/3)**sin(pi/3), sin(pi/3)*(pi/3)**(sin(pi/3)-1) * 3 + (pi/3)**sin(pi/3)*log(pi/3, e)*cos(pi/3))
