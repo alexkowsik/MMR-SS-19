@@ -1,5 +1,7 @@
 import numpy as np
-import matplotlib;matplotlib.use("TkAgg")   #Komischer fix für ein komisches Problem
+import matplotlib;
+
+matplotlib.use("TkAgg")  # Komischer fix für ein komisches Problem
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
@@ -16,7 +18,7 @@ origin = ax.plot(0, 0, "x", color="red")
 pos, = ax.plot([], [], "o", color="black")
 text = ax.text(0.1, 0.2, '', transform=ax.transAxes)
 # line für die Geswchwindigkeit
-lin, = ax.plot([], [], 'r-', linewidth=5)
+lin, = ax.plot([], [], 'r-', linewidth=3)
 
 # berechnnung der neuen position
 
@@ -49,6 +51,7 @@ curve_pos[0] = x_init  # pos[t] ist abhängig von der zeit
 
 # Berechner hier die Position des Pendels für Zeit t durch : Position an Zeit t-1 + Geschwindigkeit
 # an Zeit t-1
+
 for t in range(1, len(time)):
     curve_pos[t] = curve_pos[t - h] + x_deriv * h
     x_deriv += F(curve_pos[t])
@@ -64,13 +67,15 @@ def init():
     return pos, text, lin,
 
 
+# ([curve_pos[t][0]-tan[0], tan*2],
+#                  [curve_pos[t][1]-tan[1], tan*2])
 # animationsschritt
 def step(t):
-    global x_deriv
     pos.set_data([curve_pos[t][0]], [curve_pos[t][1]])
     text.set_text(str(t))
-    lin.set_data([curve_pos[t][0], curve_pos[t + 1][0]],
-                 [curve_pos[t][1], curve_pos[t + 1][1]])
+    tan = [curve_pos[t + 1][0] - curve_pos[t - 1][0], curve_pos[t + 1][1] - curve_pos[t - 1][1]]
+    lin.set_data([curve_pos[t][0] - tan[0], curve_pos[t][0] + tan[0]],
+                 [curve_pos[t][1] - tan[1], curve_pos[t][1] + tan[1]])
 
     return pos, text, lin
 
