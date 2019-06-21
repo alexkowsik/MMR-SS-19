@@ -17,17 +17,17 @@ def aufgabe1():
     # berechne hier die ableitung für x, indem man zeilenweise die ableitung
     # von 2h-weit entfernten punkten berechnet
     for y in range(img.shape[0]):
-        for x in range(1, img.shape[1] - 1):
+        for x in range(1, img.shape[1] - h):
             x_dif[y][x] = (img[y][x + h] - img[y][x - h]) / 2 * h
 
     # berechne hier die ableitung für y, indem man spaltenweise die ableitung
     # von 2h-weit entfernten punkten berechnet
     for x in range(img.shape[1]):
-        for y in range(1, img.shape[0] - 1):
+        for y in range(1, img.shape[0] - h):
             y_dif[y][x] = (img[y - h][x] - img[y + h][x]) / 2 * h
 
     deriv = np.zeros((y_dif.shape[0], x_dif.shape[1]))
-    for x in range(1, x_dif.shape[1] - 1):
+    for x in range(1, x_dif.shape[1] - h):
         for y in range(1, y_dif.shape[0] - 1):
             deriv[y][x] = np.sqrt(x_dif[y][x] ** 2 + y_dif[y][x] ** 2)
 

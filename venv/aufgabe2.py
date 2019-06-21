@@ -52,7 +52,7 @@ curve_pos[0] = x_init  # pos[t] ist abhängig von der zeit
 # Berechner hier die Position des Pendels für Zeit t durch : Position an Zeit t-1 + Geschwindigkeit
 # an Zeit t-1
 
-for t in range(1, len(time)):
+for t in range(h, len(time)):
     curve_pos[t] = curve_pos[t - h] + x_deriv * h
     x_deriv += F(curve_pos[t])
 
