@@ -9,10 +9,12 @@ def aufgabe1():
     image = Image.open("../resources/pic2.jpg").convert("L")
     img = np.asarray(image).astype(dtype='int64')
 
-    # berechne hier die ableitungen, indem man zeilenweise
+    # Ableitungen:
+    # initialisiere matrizen und schrittweite
     h = 1
     x_dif = np.zeros(img.shape).astype(dtype='int64')
     y_dif = np.zeros(img.shape).astype(dtype='int64')
+    deriv = np.zeros(img.shape).astype(dtype='int64')
 
     # berechne hier die ableitung für x, indem man zeilenweise die ableitung
     # von 2h-weit entfernten punkten berechnet
@@ -26,9 +28,9 @@ def aufgabe1():
         for y in range(1, img.shape[0] - h):
             y_dif[y][x] = (img[y - h][x] - img[y + h][x]) / 2 * h
 
-    deriv = np.zeros((y_dif.shape[0], x_dif.shape[1]))
-    for x in range(1, x_dif.shape[1] - h):
-        for y in range(1, y_dif.shape[0] - 1):
+    # berechne hier für jeden punkt die euklid-norm der richtungsableitung (aus parametermatrizen)
+    for x in range(1, x_dif.shape[1]):
+        for y in range(1, y_dif.shape[0]):
             deriv[y][x] = np.sqrt(x_dif[y][x] ** 2 + y_dif[y][x] ** 2)
 
     # plotte bild
