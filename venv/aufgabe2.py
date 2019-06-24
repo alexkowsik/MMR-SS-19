@@ -1,60 +1,55 @@
 import numpy as np
-import matplotlib;
-
-matplotlib.use("TkAgg")  # Komischer fix für ein komisches Problem
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+matplotlib.use("TkAgg")  # Komischer fix für ein komisches Problem
+
+# sub plots:
 fig, ax = plt.subplots()
 
-# Das ist der Plot für die Laufbahn. Wir später erst von curve_pos befüllt
-curve, = ax.plot([], [], "-", color="blue")
+# plot objekte:
+curve, = ax.plot([], [], "-", color="blue")             # laufbahn
+origin = ax.plot(0, 0, "x", color="red")                # fixpunkt
+pos, = ax.plot([], [], "o", color="black")              # aktuelle position
+lin, = ax.plot([], [], 'r-', linewidth=3)               # geschwindigkeitsindikator
 
-# da wir um einen Punkit rotieren, malen wir uns diesen hier
-origin = ax.plot(0, 0, "x", color="red")
-
-# pos ist die aktuelle Position auf der Bahn beschrieben in curve_pos.
-# d.h. pos ist curve[t][0] und curve[t][1] und diese punkte malen wir immer neu ( t ist die zeit)
-pos, = ax.plot([], [], "o", color="black")
 text = ax.text(0.1, 0.2, '', transform=ax.transAxes)
-# line für die Geswchwindigkeit
-lin, = ax.plot([], [], 'r-', linewidth=3)
 
-# berechnnung der neuen position
+# konstanten
+mass = 6                            # masse des pendels
+D = 0.1                             # federkonstante
+h = 1                               # Schrittweite(tick)
+time = np.linspace(0, 100, 10000)   # Zeitgitter
 
-mass = 6  # masse des pendels
-D = 0.1  # federkonstante
-h = 1  # Schrittweite(tick)
-time = np.linspace(0, 100, 10000)  # Zeitgitter
-
-
-def F(pos):  # Rückstellkräfte
-    global D, mass
-    return (-D * pos) / mass
-
-
-# Zufällige startpositionen/-geschwindigkeiten
-x_init = np.asarray([np.random.uniform(-1, 1),
-                     np.random.uniform(-1, 1)])
-for item in x_init:
+# zufällige anfangsgeschwindigkeit
+init_vel = np.asarray([np.random.uniform(-1, 1),
+                       np.random.uniform(-1, 1)])
+for item in init_vel:
     if item == 0:
         item = 1
 
-x_deriv = np.asarray([np.random.uniform(-1, 1),
-                      np.random.uniform(-1, 1)])
-for item in x_deriv:
+# zufälliger anfangspunkt
+init_pos = np.asarray([np.random.uniform(-1, 1),
+                       np.random.uniform(-1, 1)])
+for item in init_pos:
     if item == 0:
         item = 1
 
 curve_pos = np.zeros((len(time), 2))  # es gibt zu jedem zeitpunkt einen x und einen y eintrag
-curve_pos[0] = x_init  # pos[t] ist abhängig von der zeit
+curve_pos[0] = init_pos  # pos[t] ist abhängig von der zeit
 
-# Berechner hier die Position des Pendels für Zeit t durch : Position an Zeit t-1 + Geschwindigkeit
-# an Zeit t-1
-
+# berechne Liste aller Positionen(Position an Zeit t-1 + Geschwindigkeit an Zeit t-1):
 for t in range(h, len(time)):
-    curve_pos[t] = curve_pos[t - h] + x_deriv * h
-    x_deriv += F(curve_pos[t])
+    current_vel = init_vel
+    curve_pos[t] = curve_pos[t - h] + current_vel * h
+    current_vel += centripetal_acceleration(curve_pos[t])
+
+
+# beschleunigungsfunktion aus formel für rückstellkraft
+def centripetal_acceleration(pos):
+    global D, mass
+    return (-D * pos) / mass
 
 
 # initialisierung der animation (startbild)
