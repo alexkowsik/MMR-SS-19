@@ -45,7 +45,6 @@ class oscillator:
         for t in range(self.h, len(self.time)):
             self.curve_pos[t] = self.curve_pos[t - self.h] + self.vel * self.h
             self.vel += self.centripetal_a(self.curve_pos[t])
-        print(self.curve_pos)
 
     def centripetal_a(self, pos):
         return (-self.D * pos) / self.m
@@ -77,8 +76,8 @@ class oscillator:
         self.plot_objects['pos'].set_data([self.curve_pos[t][0]], [self.curve_pos[t][1]])
         self.plot_objects['text'].set_text(str(t))
         tan = [self.curve_pos[t + 1][0] - self.curve_pos[t - 1][0], self.curve_pos[t + 1][1] - self.curve_pos[t - 1][1]]
-        self.plot_objects['lin'].set_data([self.curve_pos[t][0] - tan[0], self.curve_pos[t][0] + tan[0]],
-                                          [self.curve_pos[t][1] - tan[1], self.curve_pos[t][1] + tan[1]])
+        self.plot_objects['lin'].set_data([self.curve_pos[t][0], self.curve_pos[t][0] + tan[0]],
+                                          [self.curve_pos[t][1], self.curve_pos[t][1] + tan[1]])
 
         return self.plot_objects['pos'], self.plot_objects['text'], self.plot_objects['lin']
 

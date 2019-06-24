@@ -39,18 +39,16 @@ for item in init_pos:
 curve_pos = np.zeros((len(time), 2))  # es gibt zu jedem zeitpunkt einen x und einen y eintrag
 curve_pos[0] = init_pos  # pos[t] ist abhängig von der zeit
 
-# berechne Liste aller Positionen(Position an Zeit t-1 + Geschwindigkeit an Zeit t-1):
-for t in range(h, len(time)):
-    current_vel = init_vel
-    curve_pos[t] = curve_pos[t - h] + current_vel * h
-    current_vel += centripetal_acceleration(curve_pos[t])
-
-
 # beschleunigungsfunktion aus formel für rückstellkraft
 def centripetal_acceleration(pos):
     global D, mass
     return (-D * pos) / mass
 
+# berechne Liste aller Positionen(Position an Zeit t-1 + Geschwindigkeit an Zeit t-1):
+for t in range(h, len(time)):
+    current_vel = init_vel
+    curve_pos[t] = curve_pos[t - h] + current_vel * h
+    current_vel += centripetal_acceleration(curve_pos[t])
 
 # initialisierung der animation (startbild)
 def init():
@@ -69,8 +67,8 @@ def step(t):
     pos.set_data([curve_pos[t][0]], [curve_pos[t][1]])
     text.set_text(str(t))
     tan = [curve_pos[t + 1][0] - curve_pos[t - 1][0], curve_pos[t + 1][1] - curve_pos[t - 1][1]]
-    lin.set_data([curve_pos[t][0] - tan[0], curve_pos[t][0] + tan[0]],
-                 [curve_pos[t][1] - tan[1], curve_pos[t][1] + tan[1]])
+    lin.set_data([curve_pos[t][0], curve_pos[t][0] + tan[0]],
+                 [curve_pos[t][1], curve_pos[t][1] + tan[1]])
 
     return pos, text, lin
 
